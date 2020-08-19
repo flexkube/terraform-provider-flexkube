@@ -64,6 +64,15 @@ func getRelease(d *schema.ResourceData, m interface{}) (release.Release, error) 
 	return r.New()
 }
 
+func getReleaseID(d *schema.ResourceData) string {
+	chart := d.Get("chart").(string)
+	name := d.Get("name").(string)
+	namespace := d.Get("namespace").(string)
+	kubeconfig := d.Get("kubeconfig").(string)
+
+	return sha256sum([]byte(chart + name + namespace + kubeconfig))
+}
+
 func resourceHelmReleaseCreate(d *schema.ResourceData, m interface{}) error {
 	release, err := getRelease(d, m)
 	if err != nil {
@@ -74,8 +83,7 @@ func resourceHelmReleaseCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	result := sha256sum([]byte(d.Get("chart").(string) + d.Get("name").(string) + d.Get("namespace").(string) + d.Get("kubeconfig").(string)))
-	d.SetId(result)
+	d.SetId(getReleaseID(d))
 
 	return nil
 }
@@ -92,8 +100,7 @@ func resourceHelmReleaseRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	if e {
-		result := sha256sum([]byte(d.Get("chart").(string) + d.Get("name").(string) + d.Get("namespace").(string) + d.Get("kubeconfig").(string)))
-		d.SetId(result)
+		d.SetId(getReleaseID(d))
 	} else {
 		d.SetId("")
 	}
