@@ -45,7 +45,8 @@ func resourceControlplane() *schema.Resource {
 func controlplaneDiff(d *schema.ResourceDiff, m interface{}) error {
 	rd := reflect.ValueOf(d).Elem()
 	rdiff := rd.FieldByName("diff")
-	diff := reflect.NewAt(rdiff.Type(), unsafe.Pointer(rdiff.UnsafeAddr())).Elem().Interface().(*terraform.InstanceDiff) // #nosec G103
+	ptr := unsafe.Pointer(rdiff.UnsafeAddr()) // #nosec G103
+	diff := reflect.NewAt(rdiff.Type(), ptr).Elem().Interface().(*terraform.InstanceDiff)
 
 	if len(diff.Attributes) > 0 {
 		keys := []string{"state", "config_yaml", "state_sensitive", "state_yaml"}
