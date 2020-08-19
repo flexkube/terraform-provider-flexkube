@@ -97,7 +97,6 @@ func controlplaneUnmarshal(d getter, includeState bool) types.ResourceConfig {
 func controlplaneDestroy(d *schema.ResourceData, m interface{}) error {
 	c := controlplaneUnmarshal(d, true)
 
-	// TODO Perhaps ResourceConfig should support generic destroying?
 	c.(*controlplane.Controlplane).Destroy = true
 
 	// Validate the configuration.
