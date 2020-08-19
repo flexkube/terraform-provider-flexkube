@@ -9,7 +9,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 
-	"github.com/flexkube/libflexkube/internal/utiltest"
 	"github.com/flexkube/libflexkube/pkg/container"
 	"github.com/flexkube/libflexkube/pkg/container/runtime/docker"
 	"github.com/flexkube/libflexkube/pkg/container/types"
@@ -369,10 +368,8 @@ resource "flexkube_controlplane" "bootstrap" {
 	})
 }
 
-func TestControlplaneDestroy(t *testing.T) { //nolint:funlen
+func TestControlplaneDestroy(t *testing.T) {
 	t.Parallel()
-
-	pki := utiltest.GeneratePKI(t)
 
 	// Prepare some fake state.
 	cs := container.ContainersState{
@@ -400,25 +397,10 @@ func TestControlplaneDestroy(t *testing.T) { //nolint:funlen
 
 	s := map[string]interface{}{
 		stateSensitiveSchemaKey: containersStateMarshal(cs, false),
-		"common": []interface{}{
-			map[string]interface{}{
-				"kubernetes_ca_certificate":  pki.Certificate,
-				"front_proxy_ca_certificate": pki.Certificate,
-			},
-		},
 		"kube_apiserver": []interface{}{
 			map[string]interface{}{
-				"api_server_certificate":     pki.Certificate,
-				"api_server_key":             pki.PrivateKey,
-				"front_proxy_certificate":    pki.Certificate,
-				"front_proxy_key":            pki.PrivateKey,
-				"kubelet_client_certificate": pki.Certificate,
-				"kubelet_client_key":         pki.PrivateKey,
 				"service_account_public_key": "foo",
 				"service_cidr":               "11.0.0.0/24",
-				"etcd_ca_certificate":        pki.Certificate,
-				"etcd_client_certificate":    pki.Certificate,
-				"etcd_client_key":            pki.PrivateKey,
 				"etcd_servers": []interface{}{
 					"foo",
 				},
@@ -426,31 +408,8 @@ func TestControlplaneDestroy(t *testing.T) { //nolint:funlen
 				"advertise_address": "1.1.1.1",
 			},
 		},
-		"kube_controller_manager": []interface{}{
-			map[string]interface{}{
-				"kubernetes_ca_key":           pki.PrivateKey,
-				"service_account_private_key": pki.PrivateKey,
-				"kubeconfig": []interface{}{
-					map[string]interface{}{
-						"client_certificate": pki.Certificate,
-						"client_key":         pki.PrivateKey,
-					},
-				},
-				"root_ca_certificate": pki.Certificate,
-			},
-		},
 		"api_server_address": "1.1.1.1",
 		"api_server_port":    1,
-		"kube_scheduler": []interface{}{
-			map[string]interface{}{
-				"kubeconfig": []interface{}{
-					map[string]interface{}{
-						"client_certificate": pki.Certificate,
-						"client_key":         pki.PrivateKey,
-					},
-				},
-			},
-		},
 	}
 
 	r := resourceControlplane()
