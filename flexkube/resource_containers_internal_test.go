@@ -11,7 +11,7 @@ import (
 func TestContainersPlanOnly(t *testing.T) {
 	config := `
 resource "flexkube_containers" "foo" {
-  container {
+  host_configured_container {
     name = "bar"
 
     container {
@@ -41,7 +41,7 @@ resource "flexkube_containers" "foo" {
 func TestContainersCreateRuntimeError(t *testing.T) {
 	config := `
 resource "flexkube_containers" "foo" {
-  container {
+  host_configured_container {
     name = "bar"
 
     container {
@@ -76,7 +76,7 @@ resource "flexkube_containers" "foo" {
 func TestContainersValidateFail(t *testing.T) {
 	config := `
 resource "flexkube_containers" "foo" {
-  container {
+  host_configured_container {
     name = "bar"
 
     container {

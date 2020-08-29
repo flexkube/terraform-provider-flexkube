@@ -13,11 +13,11 @@ func resourceContainers() *schema.Resource {
 		// Update should be exactly the same operation as Create.
 		Update:        resourceCreate(containersUnmarshal),
 		Read:          resourceRead(containersUnmarshal),
-		Delete:        resourceDelete(containersUnmarshal, "container"),
+		Delete:        resourceDelete(containersUnmarshal, "host_configured_container"),
 		CustomizeDiff: resourceDiff(containersUnmarshal),
 		Schema: withCommonFields(map[string]*schema.Schema{
 			// Configuration specified by the user.
-			"container": hostConfiguredContainerSchema(false, false),
+			"host_configured_container": hostConfiguredContainerSchema(false, false),
 		}),
 	}
 }
@@ -25,7 +25,7 @@ func resourceContainers() *schema.Resource {
 func containersUnmarshal(d getter, includeState bool) types.ResourceConfig {
 	c := &resource.Containers{}
 
-	if cs := containersStateUnmarshal(d.Get("container")); cs != nil {
+	if cs := containersStateUnmarshal(d.Get("host_configured_container")); cs != nil {
 		c.Containers = *cs
 	}
 

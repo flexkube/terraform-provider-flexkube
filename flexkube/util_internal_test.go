@@ -104,7 +104,7 @@ func TestResourceDeleteEmpty(t *testing.T) {
 		t.Fatalf("Failed writing: %v", err)
 	}
 
-	if err := d.Set("container", containersStateMarshal(s, false)); err != nil {
+	if err := d.Set("host_configured_container", containersStateMarshal(s, false)); err != nil {
 		t.Fatalf("writing containers configuration to state failed: %v", err)
 	}
 
@@ -186,7 +186,7 @@ func TestResourceCreate(t *testing.T) {
 	}
 
 	d := r.Data(&terraform.InstanceState{})
-	if err := d.Set("container", containersStateMarshal(s, false)); err != nil {
+	if err := d.Set("host_configured_container", containersStateMarshal(s, false)); err != nil {
 		t.Fatalf("writing containers configuration to state failed: %v", err)
 	}
 
@@ -218,7 +218,7 @@ func TestResourceCreateFailInitialize(t *testing.T) {
 	}
 
 	d := r.Data(&terraform.InstanceState{})
-	if err := d.Set("container", containersStateMarshal(s, false)); err != nil {
+	if err := d.Set("host_configured_container", containersStateMarshal(s, false)); err != nil {
 		t.Fatalf("writing containers configuration to state failed: %v", err)
 	}
 
@@ -251,7 +251,7 @@ func TestResourceRead(t *testing.T) {
 	}
 
 	d := r.Data(&terraform.InstanceState{})
-	if err := d.Set("container", containersStateMarshal(s, false)); err != nil {
+	if err := d.Set("host_configured_container", containersStateMarshal(s, false)); err != nil {
 		t.Fatalf("writing containers configuration to state failed: %v", err)
 	}
 
@@ -283,7 +283,7 @@ func TestResourceReadFailInitialize(t *testing.T) {
 	}
 
 	d := r.Data(&terraform.InstanceState{})
-	if err := d.Set("container", containersStateMarshal(s, false)); err != nil {
+	if err := d.Set("host_configured_container", containersStateMarshal(s, false)); err != nil {
 		t.Fatalf("writing containers configuration to state failed: %v", err)
 	}
 
