@@ -44,6 +44,10 @@ func resourceHelmRelease() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
+			"wait": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -56,6 +60,10 @@ func getRelease(d *schema.ResourceData, m interface{}) (release.Release, error) 
 		Chart:      d.Get("chart").(string),
 		Values:     d.Get("values").(string),
 		Version:    d.Get("version").(string),
+	}
+
+	if v, ok := d.GetOk("wait"); ok {
+		r.Wait = v.(bool)
 	}
 
 	if v, ok := d.GetOk("create_namespace"); ok {
