@@ -12,7 +12,7 @@ func hostConfiguredContainerMarshal(name string, c container.HostConfiguredConta
 	return map[string]interface{}{
 		"container":    containerMarshal(c.Container),
 		"name":         name,
-		"config_files": configFilesMarshal(c.ConfigFiles, sensitive),
+		"config_files": stringMapMarshal(c.ConfigFiles, sensitive),
 		"host":         hostMarshal(c.Host, sensitive),
 	}
 }
@@ -21,7 +21,7 @@ func hostConfiguredContainerUnmarshal(i interface{}) (string, *container.HostCon
 	j := i.(map[string]interface{})
 
 	h := &container.HostConfiguredContainer{
-		ConfigFiles: configFilesUnmarshal(j["config_files"]),
+		ConfigFiles: stringMapUnmarshal(j["config_files"]),
 		Host: host.Host{
 			DirectConfig: &direct.Config{},
 		},
@@ -44,7 +44,7 @@ func hostConfiguredContainerSchema(computed, sensitive bool) *schema.Schema {
 			Schema: map[string]*schema.Schema{
 				"name":         requiredString(computed),
 				"container":    containerSchema(computed),
-				"config_files": configFilesSchema(computed),
+				"config_files": stringMapSchema(computed, true),
 				"host":         hostSchema(computed),
 			},
 		}
