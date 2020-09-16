@@ -45,11 +45,11 @@ resource "flexkube_containers" "foo" {
     name = "bar"
 
     container {
-			runtime {
-				docker {
-					host = "unix:///nonexistent"
-				}
-			}
+      runtime {
+        docker {
+          host = "unix:///nonexistent"
+        }
+      }
 
       config {
         name  = "bazhh"
@@ -81,7 +81,7 @@ resource "flexkube_containers" "foo" {
 
     container {
       config {
-				name = ""
+        name = ""
         image = "nginx"
       }
     }
