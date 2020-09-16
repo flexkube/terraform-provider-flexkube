@@ -18,6 +18,10 @@ resource "flexkube_containers" "foo" {
       config {
         name  = "bazhh"
         image = "nginx"
+
+        env = {
+          FOO = "bar"
+        }
       }
     }
   }

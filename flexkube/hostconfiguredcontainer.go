@@ -10,7 +10,7 @@ import (
 
 func hostConfiguredContainerMarshal(name string, c container.HostConfiguredContainer, sensitive bool) interface{} {
 	return map[string]interface{}{
-		"container":    containerMarshal(c.Container),
+		"container":    containerMarshal(c.Container, sensitive),
 		"name":         name,
 		"config_files": stringMapMarshal(c.ConfigFiles, sensitive),
 		"host":         hostMarshal(c.Host, sensitive),

@@ -36,6 +36,7 @@ func TestContainerMarshal(t *testing.T) {
 					"ipc_mode":     "",
 					"user":         "",
 					"group":        "",
+					"env":          map[string]interface{}{},
 				},
 			},
 			"runtime": []interface{}{
@@ -50,7 +51,7 @@ func TestContainerMarshal(t *testing.T) {
 		},
 	}
 
-	if diff := cmp.Diff(containerMarshal(c), e); diff != "" {
+	if diff := cmp.Diff(containerMarshal(c, false), e); diff != "" {
 		t.Errorf("Unexpected diff:\n%s", diff)
 	}
 }
@@ -85,6 +86,7 @@ func TestContainerMarshalWithStatus(t *testing.T) {
 					"ipc_mode":     "",
 					"user":         "",
 					"group":        "",
+					"env":          map[string]interface{}{},
 				},
 			},
 			"status": []interface{}{
@@ -105,7 +107,7 @@ func TestContainerMarshalWithStatus(t *testing.T) {
 		},
 	}
 
-	if diff := cmp.Diff(containerMarshal(c), e); diff != "" {
+	if diff := cmp.Diff(containerMarshal(c, false), e); diff != "" {
 		t.Errorf("Unexpected diff:\n%s", diff)
 	}
 }

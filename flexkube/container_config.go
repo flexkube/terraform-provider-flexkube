@@ -6,7 +6,7 @@ import (
 	"github.com/flexkube/libflexkube/pkg/container/types"
 )
 
-func containerConfigMarshal(c types.ContainerConfig) interface{} {
+func containerConfigMarshal(c types.ContainerConfig, sensitive bool) interface{} {
 	return []interface{}{
 		map[string]interface{}{
 			"name":         c.Name,
@@ -21,6 +21,7 @@ func containerConfigMarshal(c types.ContainerConfig) interface{} {
 			"ipc_mode":     c.IpcMode,
 			"user":         c.User,
 			"group":        c.Group,
+			"env":          stringMapMarshal(c.Env, sensitive),
 		},
 	}
 }
@@ -39,6 +40,7 @@ func containerConfigUnmarshal(i interface{}) types.ContainerConfig {
 		IpcMode:     j["ipc_mode"].(string),
 		User:        j["user"].(string),
 		Group:       j["group"].(string),
+		Env:         stringMapUnmarshal(j["env"]),
 	}
 
 	for _, v := range j["args"].([]interface{}) {
@@ -68,6 +70,7 @@ func containerConfigSchema(computed bool) *schema.Schema {
 				"ipc_mode":     optionalString(computed),
 				"user":         optionalString(computed),
 				"group":        optionalString(computed),
+				"env":          stringMapSchema(computed, true),
 			},
 		}
 	})

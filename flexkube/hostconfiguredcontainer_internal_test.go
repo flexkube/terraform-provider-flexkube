@@ -58,6 +58,7 @@ func TestHostConfiguredContainerMarshal(t *testing.T) { //nolint:funlen
 						"ipc_mode":     "",
 						"user":         "",
 						"group":        "",
+						"env":          map[string]interface{}{},
 					},
 				},
 				"runtime": []interface{}{
@@ -108,6 +109,7 @@ func hostConfiguredContainerMarshaled() []interface{} {
 							"ipc_mode":     "",
 							"user":         "",
 							"group":        "",
+							"env":          map[string]interface{}{},
 						},
 					},
 					"runtime": []interface{}{
