@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 
@@ -289,5 +290,69 @@ func TestResourceReadFailInitialize(t *testing.T) {
 
 	if err := r.Read(d, nil); err == nil {
 		t.Fatalf("read should check for initialize errors and fail")
+	}
+}
+
+func TestStringMapMarshal(t *testing.T) {
+	f := map[string]string{
+		"/foo": "bar",
+	}
+
+	e := map[string]interface{}{
+		"/foo": "bar",
+	}
+
+	if diff := cmp.Diff(stringMapMarshal(f, false), e); diff != "" {
+		t.Fatalf("Unexpected diff: %s", diff)
+	}
+}
+
+func TestStringMapMarshalSensitive(t *testing.T) {
+	f := map[string]string{
+		"/foo": "bar",
+	}
+
+	e := map[string]interface{}{
+		"/foo": sha256sum([]byte("bar")),
+	}
+
+	if diff := cmp.Diff(stringMapMarshal(f, true), e); diff != "" {
+		t.Fatalf("Unexpected diff: %s", diff)
+	}
+}
+
+func TestStringMapMarshalDontChecksumEmpty(t *testing.T) {
+	f := map[string]string{
+		"/foo": "",
+	}
+
+	e := map[string]interface{}{
+		"/foo": "",
+	}
+
+	if diff := cmp.Diff(stringMapMarshal(f, true), e); diff != "" {
+		t.Fatalf("Unexpected diff: %s", diff)
+	}
+}
+
+func TestStringMapUnmarshal(t *testing.T) {
+	i := map[string]interface{}{
+		"/foo": "bar",
+	}
+
+	e := map[string]string{
+		"/foo": "bar",
+	}
+
+	if diff := cmp.Diff(stringMapUnmarshal(i), e); diff != "" {
+		t.Fatalf("Unexpected diff: %s", diff)
+	}
+}
+
+func TestStringMapUnmarshalEmpty(t *testing.T) {
+	var e map[string]string
+
+	if diff := cmp.Diff(stringMapUnmarshal(nil), e); diff != "" {
+		t.Fatalf("Unexpected diff: %s", diff)
 	}
 }
