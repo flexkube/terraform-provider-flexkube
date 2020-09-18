@@ -4,8 +4,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/terraform-provider-flexkube/flexkube"
 )
@@ -47,7 +47,7 @@ func TestHelmRelease(t *testing.T) {
 	t.Parallel()
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: map[string]terraform.ResourceProvider{
+		Providers: map[string]*schema.Provider{
 			"flexkube": flexkube.Provider(),
 		},
 		Steps: []resource.TestStep{

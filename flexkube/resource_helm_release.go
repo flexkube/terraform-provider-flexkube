@@ -1,17 +1,20 @@
 package flexkube
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/helm/release"
 )
 
 func resourceHelmRelease() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceHelmReleaseCreate,
-		Read:   resourceHelmReleaseRead,
-		Delete: resourceHelmReleaseDelete,
-		Update: resourceHelmReleaseCreate,
+		CreateContext: resourceHelmReleaseCreate,
+		ReadContext:   resourceHelmReleaseRead,
+		DeleteContext: resourceHelmReleaseDelete,
+		UpdateContext: resourceHelmReleaseCreate,
 		Schema: map[string]*schema.Schema{
 			"kubeconfig": {
 				Type:      schema.TypeString,
@@ -86,14 +89,14 @@ func getReleaseID(d *schema.ResourceData) string {
 	return sha256sum([]byte(chart + name + namespace + kubeconfig))
 }
 
-func resourceHelmReleaseCreate(d *schema.ResourceData, m interface{}) error {
+func resourceHelmReleaseCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	release, err := getRelease(d, m)
 	if err != nil {
-		return err
+		return diagFromErr(err)
 	}
 
 	if err := release.InstallOrUpgrade(); err != nil {
-		return err
+		return diagFromErr(err)
 	}
 
 	d.SetId(getReleaseID(d))
@@ -101,15 +104,15 @@ func resourceHelmReleaseCreate(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceHelmReleaseRead(d *schema.ResourceData, m interface{}) error {
+func resourceHelmReleaseRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	release, err := getRelease(d, m)
 	if err != nil {
-		return err
+		return diagFromErr(err)
 	}
 
 	e, err := release.Exists()
 	if err != nil {
-		return err
+		return diagFromErr(err)
 	}
 
 	if e {
@@ -121,14 +124,14 @@ func resourceHelmReleaseRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceHelmReleaseDelete(d *schema.ResourceData, m interface{}) error {
+func resourceHelmReleaseDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	release, err := getRelease(d, m)
 	if err != nil {
-		return err
+		return diagFromErr(err)
 	}
 
 	if err := release.Uninstall(); err != nil {
-		return err
+		return diagFromErr(err)
 	}
 
 	d.SetId("")

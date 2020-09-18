@@ -1,12 +1,13 @@
 package flexkube
 
 import (
+	"context"
 	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
 	"github.com/flexkube/libflexkube/pkg/container"
 	"github.com/flexkube/libflexkube/pkg/container/resource"
@@ -32,6 +33,7 @@ func TestSaveStateBadScheme(t *testing.T) {
 func TestResourceDeleteRuntimeFail(t *testing.T) {
 	// Get the resource object we will work on.
 	r := resourceContainers()
+	r.DeleteContext = resourceDelete(containersUnmarshal, stateSensitiveSchemaKey)
 
 	// Prepare some fake state.
 	s := container.ContainersState{
@@ -72,14 +74,14 @@ func TestResourceDeleteRuntimeFail(t *testing.T) {
 	dn := r.Data(d.State())
 
 	// Finally, try to call Delete.
-	if err := r.Delete(dn, nil); err == nil {
+	if err := r.DeleteContext(context.TODO(), dn, nil); err == nil {
 		t.Fatalf("destroying should fail with unreachable runtime")
 	}
 }
 
 func TestResourceDeleteEmpty(t *testing.T) {
 	r := resourceContainers()
-	r.Delete = resourceDelete(containersUnmarshal, stateSensitiveSchemaKey)
+	r.DeleteContext = resourceDelete(containersUnmarshal, stateSensitiveSchemaKey)
 
 	s := container.ContainersState{
 		"foo": &container.HostConfiguredContainer{
@@ -109,7 +111,7 @@ func TestResourceDeleteEmpty(t *testing.T) {
 		t.Fatalf("writing containers configuration to state failed: %v", err)
 	}
 
-	if err := r.Delete(d, nil); !strings.Contains(err.Error(), "Is the docker daemon running") {
+	if err := r.DeleteContext(context.TODO(), d, nil); !strings.Contains(err[0].Summary, "Is the docker daemon running") {
 		t.Fatalf("destroying should fail for unreachable runtime")
 	}
 }
@@ -117,16 +119,16 @@ func TestResourceDeleteEmpty(t *testing.T) {
 func TestResourceDeleteEmptyState(t *testing.T) {
 	r := resourceContainers()
 
-	if err := r.Delete(r.Data(&terraform.InstanceState{}), nil); err == nil {
+	if err := r.DeleteContext(context.TODO(), r.Data(&terraform.InstanceState{}), nil); err == nil {
 		t.Fatalf("initializing from empty state should fail")
 	}
 }
 
 func TestResourceDeleteBadKey(t *testing.T) {
 	r := resourceContainers()
-	r.Delete = resourceDelete(containersUnmarshal, "foo")
+	r.DeleteContext = resourceDelete(containersUnmarshal, "foo")
 
-	if err := r.Delete(r.Data(&terraform.InstanceState{}), nil); err == nil {
+	if err := r.DeleteContext(context.TODO(), r.Data(&terraform.InstanceState{}), nil); err == nil {
 		t.Fatalf("emptying key not existing in scheme should fail")
 	}
 }
@@ -191,7 +193,7 @@ func TestResourceCreate(t *testing.T) {
 		t.Fatalf("writing containers configuration to state failed: %v", err)
 	}
 
-	if err := r.Create(d, nil); !strings.Contains(err.Error(), "Is the docker daemon running") {
+	if err := r.CreateContext(context.TODO(), d, nil); !strings.Contains(err[0].Summary, "Is the docker daemon running") {
 		t.Fatalf("creating should fail for unreachable runtime, got: %v", err)
 	}
 }
@@ -223,7 +225,7 @@ func TestResourceCreateFailInitialize(t *testing.T) {
 		t.Fatalf("writing containers configuration to state failed: %v", err)
 	}
 
-	if err := r.Create(d, nil); !strings.Contains(err.Error(), "name must be set") {
+	if err := r.CreateContext(context.TODO(), d, nil); !strings.Contains(err[0].Summary, "name must be set") {
 		t.Fatalf("creating should fail for unreachable runtime, got: %v", err)
 	}
 }
@@ -256,7 +258,7 @@ func TestResourceRead(t *testing.T) {
 		t.Fatalf("writing containers configuration to state failed: %v", err)
 	}
 
-	if err := r.Read(d, nil); err != nil {
+	if err := r.ReadContext(context.TODO(), d, nil); err != nil {
 		t.Fatalf("reading with no previous state should succeed, got: %v", err)
 	}
 }
@@ -288,7 +290,7 @@ func TestResourceReadFailInitialize(t *testing.T) {
 		t.Fatalf("writing containers configuration to state failed: %v", err)
 	}
 
-	if err := r.Read(d, nil); err == nil {
+	if err := r.ReadContext(context.TODO(), d, nil); err == nil {
 		t.Fatalf("read should check for initialize errors and fail")
 	}
 }

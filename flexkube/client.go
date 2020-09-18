@@ -3,7 +3,7 @@ package flexkube
 import (
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/kubernetes/client"
 	"github.com/flexkube/libflexkube/pkg/types"

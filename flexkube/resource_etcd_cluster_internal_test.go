@@ -5,9 +5,8 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/etcd"
 )
@@ -59,7 +58,7 @@ resource "flexkube_etcd_cluster" "etcd" {
 `
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: map[string]terraform.ResourceProvider{
+		Providers: map[string]*schema.Provider{
 			"flexkube": Provider(),
 		},
 		Steps: []resource.TestStep{
@@ -124,7 +123,7 @@ func TestEtcdClusterCreateRuntimeError(t *testing.T) {
 	t.Parallel()
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: map[string]terraform.ResourceProvider{
+		Providers: map[string]*schema.Provider{
 			"flexkube": Provider(),
 		},
 		Steps: []resource.TestStep{
@@ -153,7 +152,7 @@ resource "flexkube_etcd_cluster" "etcd" {
 `
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: map[string]terraform.ResourceProvider{
+		Providers: map[string]*schema.Provider{
 			"flexkube": Provider(),
 		},
 		Steps: []resource.TestStep{

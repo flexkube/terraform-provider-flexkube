@@ -1,13 +1,13 @@
 package flexkube
 
 import (
+	"context"
 	"regexp"
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/container"
 	"github.com/flexkube/libflexkube/pkg/container/runtime/docker"
@@ -82,7 +82,7 @@ func TestControlplanePlanOnly(t *testing.T) {
 	t.Parallel()
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: map[string]terraform.ResourceProvider{
+		Providers: map[string]*schema.Provider{
 			"flexkube": Provider(),
 		},
 		Steps: []resource.TestStep{
@@ -209,7 +209,7 @@ func TestControlplaneCreateRuntimeError(t *testing.T) {
 	t.Parallel()
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: map[string]terraform.ResourceProvider{
+		Providers: map[string]*schema.Provider{
 			"flexkube": Provider(),
 		},
 		Steps: []resource.TestStep{
@@ -281,7 +281,7 @@ func TestControlplaneValidateFail(t *testing.T) {
 	t.Parallel()
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: map[string]terraform.ResourceProvider{
+		Providers: map[string]*schema.Provider{
 			"flexkube": Provider(),
 		},
 		Steps: []resource.TestStep{
@@ -311,7 +311,7 @@ resource "flexkube_controlplane" "bootstrap" {
 `
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: map[string]terraform.ResourceProvider{
+		Providers: map[string]*schema.Provider{
 			"flexkube": Provider(),
 		},
 		Steps: []resource.TestStep{
@@ -331,13 +331,13 @@ resource "flexkube_controlplane" "bootstrap" {}
 `
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: map[string]terraform.ResourceProvider{
+		Providers: map[string]*schema.Provider{
 			"flexkube": Provider(),
 		},
 		Steps: []resource.TestStep{
 			{
 				Config:      config,
-				ExpectError: regexp.MustCompile(`required field is not set`),
+				ExpectError: regexp.MustCompile(`Required attribute is not set`),
 			},
 		},
 	})
@@ -356,13 +356,13 @@ resource "flexkube_controlplane" "bootstrap" {
 `
 
 	resource.UnitTest(t, resource.TestCase{
-		Providers: map[string]terraform.ResourceProvider{
+		Providers: map[string]*schema.Provider{
 			"flexkube": Provider(),
 		},
 		Steps: []resource.TestStep{
 			{
 				Config:      config,
-				ExpectError: regexp.MustCompile(`required field is not set`),
+				ExpectError: regexp.MustCompile(`Required attribute is not set`),
 			},
 		},
 	})
@@ -421,12 +421,12 @@ func TestControlplaneDestroy(t *testing.T) {
 	// Create new ResourceData from the state, so it's persisted and there is no diff included.
 	dn := r.Data(d.State())
 
-	err := controlplaneDestroy(dn, nil)
+	err := controlplaneDestroy(context.TODO(), dn, nil)
 	if err == nil {
 		t.Fatalf("destroying with unreachable container runtime should fail")
 	}
 
-	if !strings.Contains(err.Error(), "Is the docker daemon running") {
+	if !strings.Contains(err[0].Summary, "Is the docker daemon running") {
 		t.Fatalf("destroying should fail for unreachable runtime, got: %v", err)
 	}
 }
@@ -471,12 +471,12 @@ func TestControlplaneDestroyValidateConfiguration(t *testing.T) {
 	// Create new ResourceData from the state, so it's persisted and there is no diff included.
 	dn := r.Data(d.State())
 
-	err := controlplaneDestroy(dn, nil)
+	err := controlplaneDestroy(context.TODO(), dn, nil)
 	if err == nil {
 		t.Fatalf("destroying with unreachable container runtime should fail")
 	}
 
-	if !strings.Contains(err.Error(), "Cannot connect to the Docker daemon") {
+	if !strings.Contains(err[0].Summary, "Cannot connect to the Docker daemon") {
 		t.Fatalf("destroying should fail for unreachable runtime, got: %v", err)
 	}
 }

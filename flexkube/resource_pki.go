@@ -1,9 +1,11 @@
 package flexkube
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"sigs.k8s.io/yaml"
 
 	"github.com/flexkube/libflexkube/pkg/pki"
@@ -11,10 +13,10 @@ import (
 
 func resourcePKI() *schema.Resource {
 	return &schema.Resource{
-		Create: resourcePKICreate,
-		Read:   resourcePKIRead,
-		Delete: resourcePKIDelete,
-		Update: resourcePKICreate,
+		CreateContext: resourcePKICreate,
+		ReadContext:   resourcePKIRead,
+		DeleteContext: resourcePKIDelete,
+		UpdateContext: resourcePKICreate,
 		Schema: map[string]*schema.Schema{
 			"certificate": certificateBlockSchema(false),
 			"root_ca":     certificateBlockSchema(true),
@@ -56,29 +58,29 @@ func savePKI(d *schema.ResourceData, p *pki.PKI) error {
 	return nil
 }
 
-func resourcePKICreate(d *schema.ResourceData, m interface{}) error {
+func resourcePKICreate(c context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	p := getPKI(d)
 
 	if err := p.Generate(); err != nil {
-		return err
+		return diagFromErr(err)
 	}
 
 	b, err := yaml.Marshal(p)
 	if err != nil {
-		return err
+		return diagFromErr(err)
 	}
 
 	d.SetId(sha256sum(b))
 
-	return savePKI(d, p)
+	return diagFromErr(savePKI(d, p))
 }
 
-func resourcePKIDelete(d *schema.ResourceData, m interface{}) error {
+func resourcePKIDelete(c context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	d.SetId("")
 
 	return nil
 }
 
-func resourcePKIRead(d *schema.ResourceData, m interface{}) error {
+func resourcePKIRead(c context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	return nil
 }

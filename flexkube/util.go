@@ -1,11 +1,13 @@
 package flexkube
 
 import (
+	"context"
 	"crypto/sha256"
 	"fmt"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"sigs.k8s.io/yaml"
 
 	"github.com/flexkube/libflexkube/pkg/container"
@@ -104,25 +106,35 @@ func optionalMapPrimitive(computed bool, elem func(bool) *schema.Schema) *schema
 }
 
 func requiredBlock(computed bool, elem func(bool) *schema.Resource) *schema.Schema {
-	return &schema.Schema{
+	s := &schema.Schema{
 		Type:     schema.TypeList,
 		Required: !computed,
 		Computed: computed,
-		MaxItems: blockMaxItems,
 		Elem:     elem(computed),
 	}
+
+	if !computed {
+		s.MaxItems = blockMaxItems
+	}
+
+	return s
 }
 
 func optionalBlock(computed bool, elem func(bool) map[string]*schema.Schema) *schema.Schema {
-	return &schema.Schema{
+	s := &schema.Schema{
 		Type:     schema.TypeList,
 		Optional: true,
 		Computed: computed,
-		MaxItems: blockMaxItems,
 		Elem: &schema.Resource{
 			Schema: elem(computed),
 		},
 	}
+
+	if !computed {
+		s.MaxItems = blockMaxItems
+	}
+
+	return s
 }
 
 func requiredList(computed, sensitive bool, elem func(bool) *schema.Resource) *schema.Schema {
@@ -204,12 +216,12 @@ func initialize(d getter, uf unmarshalF, refresh bool) (types.Resource, error) {
 	return r, nil
 }
 
-func resourceCreate(uf unmarshalF) func(d *schema.ResourceData, m interface{}) error {
-	return func(d *schema.ResourceData, m interface{}) error {
+func resourceCreate(uf unmarshalF) func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	return func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 		// Create Containers object.
 		c, err := initialize(d, uf, true)
 		if err != nil {
-			return fmt.Errorf("failed initializing configuration: %w", err)
+			return diagFromErr(fmt.Errorf("failed initializing configuration: %w", err))
 		}
 
 		// Deploy changes.
@@ -222,15 +234,15 @@ func resourceCreate(uf unmarshalF) func(d *schema.ResourceData, m interface{}) e
 			d.SetId(sha256sum([]byte(cmp.Diff(nil, uf(d, true)))))
 		}
 
-		return saveState(d, c.Containers().ToExported().PreviousState, uf, deployErr)
+		return diagFromErr(saveState(d, c.Containers().ToExported().PreviousState, uf, deployErr))
 	}
 }
 
-func resourceRead(uf unmarshalF) func(d *schema.ResourceData, m interface{}) error {
-	return func(d *schema.ResourceData, m interface{}) error {
+func resourceRead(uf unmarshalF) func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	return func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 		c, err := initialize(d, uf, true)
 		if err != nil {
-			return fmt.Errorf("failed initializing configuration: %w", err)
+			return diagFromErr(fmt.Errorf("failed initializing configuration: %w", err))
 		}
 
 		// If there is nothing in the current state, mark the resource as destroyed.
@@ -238,21 +250,29 @@ func resourceRead(uf unmarshalF) func(d *schema.ResourceData, m interface{}) err
 			d.SetId("")
 		}
 
-		return saveState(d, c.Containers().ToExported().PreviousState, uf, nil)
+		return diagFromErr(saveState(d, c.Containers().ToExported().PreviousState, uf, nil))
 	}
 }
 
-func resourceDelete(uf unmarshalF, key string) func(d *schema.ResourceData, m interface{}) error {
-	return func(d *schema.ResourceData, m interface{}) error {
+func diagFromErr(err error) diag.Diagnostics {
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	return nil
+}
+
+func resourceDelete(uf unmarshalF, key string) func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { //nolint:lll
+	return func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 		// Reset user configuration to indicate, that we destroy everything.
 		if err := d.Set(key, []interface{}{}); err != nil {
-			return fmt.Errorf("failed trigging a destroy: %w", err)
+			return diagFromErr(fmt.Errorf("failed trigging a destroy: %w", err))
 		}
 
 		// Create Containers object.
 		c, err := initialize(d, uf, true)
 		if err != nil {
-			return fmt.Errorf("failed initializing configuration: %w", err)
+			return diagFromErr(fmt.Errorf("failed initializing configuration: %w", err))
 		}
 
 		// Deploy changes.
@@ -265,7 +285,7 @@ func resourceDelete(uf unmarshalF, key string) func(d *schema.ResourceData, m in
 			return nil
 		}
 
-		return saveState(d, c.Containers().ToExported().PreviousState, uf, deployErr)
+		return diagFromErr(saveState(d, c.Containers().ToExported().PreviousState, uf, deployErr))
 	}
 }
 
@@ -294,8 +314,8 @@ func prepareDiff(d getter, uf unmarshalF) (cy string, r types.Resource, statesMa
 // resourceDiff customize resource diff for resources implementing types.Resource.
 // It makes sure, that all fields are marked correctly and that diff will show valuable
 // and secure output to the user.
-func resourceDiff(uf unmarshalF) func(d *schema.ResourceDiff, m interface{}) error {
-	return func(d *schema.ResourceDiff, m interface{}) error {
+func resourceDiff(uf unmarshalF) func(ctx context.Context, d *schema.ResourceDiff, m interface{}) error {
+	return func(ctx context.Context, d *schema.ResourceDiff, m interface{}) error {
 		cy, r, states, err := prepareDiff(d, uf)
 		if err != nil {
 			// If the configuration has not been fully populated yet, some of required fields might be empty, so validation
@@ -476,7 +496,7 @@ func stringMapSchema(computed bool, sensitive bool) *schema.Schema {
 		}
 	})
 
-	s.Sensitive = true
+	s.Sensitive = sensitive
 
 	return s
 }

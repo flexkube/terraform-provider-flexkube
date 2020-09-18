@@ -1,12 +1,14 @@
 package flexkube
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"unsafe"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
 	"github.com/flexkube/libflexkube/pkg/controlplane"
 	"github.com/flexkube/libflexkube/pkg/types"
@@ -14,10 +16,10 @@ import (
 
 func resourceControlplane() *schema.Resource {
 	return &schema.Resource{
-		Create:        resourceCreate(controlplaneUnmarshal),
-		Read:          resourceRead(controlplaneUnmarshal),
-		Delete:        controlplaneDestroy,
-		Update:        resourceCreate(controlplaneUnmarshal),
+		CreateContext: resourceCreate(controlplaneUnmarshal),
+		ReadContext:   resourceRead(controlplaneUnmarshal),
+		DeleteContext: controlplaneDestroy,
+		UpdateContext: resourceCreate(controlplaneUnmarshal),
 		CustomizeDiff: controlplaneDiff,
 		Schema: withCommonFields(map[string]*schema.Schema{
 			"ssh":                     sshSchema(false),
@@ -42,7 +44,7 @@ func resourceControlplane() *schema.Resource {
 // See issues:
 // - https://github.com/hashicorp/terraform-plugin-sdk/issues/371
 // - https://github.com/flexkube/libflexkube/issues/48
-func controlplaneDiff(d *schema.ResourceDiff, m interface{}) error {
+func controlplaneDiff(c context.Context, d *schema.ResourceDiff, m interface{}) error {
 	rd := reflect.ValueOf(d).Elem()
 	rdiff := rd.FieldByName("diff")
 	ptr := unsafe.Pointer(rdiff.UnsafeAddr()) // #nosec G103
@@ -57,7 +59,7 @@ func controlplaneDiff(d *schema.ResourceDiff, m interface{}) error {
 		}
 	}
 
-	return resourceDiff(controlplaneUnmarshal)(d, m)
+	return resourceDiff(controlplaneUnmarshal)(c, d, m)
 }
 
 func controlplaneUnmarshal(d getter, includeState bool) types.ResourceConfig {
@@ -94,7 +96,7 @@ func controlplaneUnmarshal(d getter, includeState bool) types.ResourceConfig {
 	return c
 }
 
-func controlplaneDestroy(d *schema.ResourceData, m interface{}) error {
+func controlplaneDestroy(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := controlplaneUnmarshal(d, true)
 
 	c.(*controlplane.Controlplane).Destroy = true
@@ -102,12 +104,12 @@ func controlplaneDestroy(d *schema.ResourceData, m interface{}) error {
 	// Validate the configuration.
 	r, err := c.New()
 	if err != nil {
-		return fmt.Errorf("failed creating resource: %w", err)
+		return diagFromErr(fmt.Errorf("failed creating resource: %w", err))
 	}
 
 	// Get current state of the containers.
 	if err := r.CheckCurrentState(); err != nil {
-		return fmt.Errorf("failed checking current state: %w", err)
+		return diagFromErr(fmt.Errorf("failed checking current state: %w", err))
 	}
 
 	// Deploy changes.
@@ -120,5 +122,5 @@ func controlplaneDestroy(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 
-	return saveState(d, r.Containers().ToExported().PreviousState, controlplaneUnmarshal, deployErr)
+	return diagFromErr(saveState(d, r.Containers().ToExported().PreviousState, controlplaneUnmarshal, deployErr))
 }
