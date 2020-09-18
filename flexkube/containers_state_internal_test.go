@@ -61,6 +61,7 @@ func TestContainersStateMarshal(t *testing.T) { //nolint:funlen
 							"ipc_mode":     "",
 							"user":         "",
 							"group":        "",
+							"env":          map[string]interface{}{},
 						},
 					},
 					"runtime": []interface{}{

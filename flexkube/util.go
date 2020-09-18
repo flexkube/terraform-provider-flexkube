@@ -469,18 +469,28 @@ func stringSliceToInterfaceSlice(i []string) []interface{} {
 	return o
 }
 
-func stringMapSchema(computed bool) *schema.Schema {
-	return optionalMapPrimitive(computed, func(computed bool) *schema.Schema {
+func stringMapSchema(computed bool, sensitive bool) *schema.Schema {
+	s := optionalMapPrimitive(computed, func(computed bool) *schema.Schema {
 		return &schema.Schema{
 			Type: schema.TypeString,
 		}
 	})
+
+	s.Sensitive = true
+
+	return s
 }
 
-func stringMapMarshal(c map[string]string) interface{} {
+func stringMapMarshal(c map[string]string, sensitive bool) interface{} {
 	i := map[string]interface{}{}
 
 	for k, v := range c {
+		if sensitive && v != "" {
+			i[k] = sha256sum([]byte(v))
+
+			continue
+		}
+
 		i[k] = v
 	}
 

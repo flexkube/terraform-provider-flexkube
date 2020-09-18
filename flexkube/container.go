@@ -7,9 +7,9 @@ import (
 	"github.com/flexkube/libflexkube/pkg/container/runtime/docker"
 )
 
-func containerMarshal(c container.Container) interface{} {
+func containerMarshal(c container.Container, sensitive bool) interface{} {
 	m := map[string]interface{}{
-		"config":  containerConfigMarshal(c.Config),
+		"config":  containerConfigMarshal(c.Config, sensitive),
 		"runtime": runtimeMarshal(c.Runtime),
 	}
 
