@@ -10,3 +10,4 @@ state.yaml
 terraform.tfstate*
 variables.auto.tfvars
 /c.out
+crash.log
