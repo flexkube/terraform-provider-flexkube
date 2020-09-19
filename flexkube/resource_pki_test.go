@@ -13,8 +13,14 @@ func TestPKIPropagateEtcdPeersToServers(t *testing.T) {
 	config := `
 resource "flexkube_pki" "pki" {
 	etcd {
-		peers = {
-			"foo" = "1.1.1.1"
+		peer_certificates {}
+
+		peer_certificates {
+			common_name = ""
+		}
+
+		peer_certificates {
+			certificate {}
 		}
 	}
 }
@@ -23,9 +29,23 @@ resource "flexkube_pki" "pki" {
 	updatedConfig := `
 resource "flexkube_pki" "pki" {
 	etcd {
+		certificate {
+			organization = "bar"
+		}
+
 		peers = {
 			"foo" = "1.1.1.1"
 			"bar" = "2.2.2.2"
+		}
+	}
+
+	kubernetes {
+		certificate {
+			organization = "foo"
+		}
+
+		kube_api_server {
+			certificate {}
 		}
 	}
 }

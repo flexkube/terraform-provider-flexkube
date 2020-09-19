@@ -19,7 +19,7 @@ func kubeconfigSchema() *schema.Schema {
 }
 
 func kubeconfigUnmarshal(i interface{}) client.Config {
-	c := client.Config{}
+	var c client.Config
 
 	// If optional block is not defined, return empty struct.
 	if i == nil {

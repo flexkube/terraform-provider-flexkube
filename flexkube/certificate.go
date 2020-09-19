@@ -44,9 +44,9 @@ func certificateUnmarshal(i interface{}) *pki.Certificate {
 		return nil
 	}
 
-	k := j[0].(map[string]interface{})
+	k, ok := j[0].(map[string]interface{})
 
-	if len(j) == 0 {
+	if !ok || len(j) == 0 {
 		return nil
 	}
 
