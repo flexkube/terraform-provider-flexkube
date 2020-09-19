@@ -1,14 +1,14 @@
 package flexkube
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/kubernetes/client"
 	"github.com/flexkube/libflexkube/pkg/types"
 )
 
 func kubeconfigSchema() *schema.Schema {
-	return optionalBlock(false, func(computed bool) map[string]*schema.Schema {
+	return optionalBlock(false, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"server":             optionalString(false),
 			"ca_certificate":     optionalString(false),
@@ -19,7 +19,7 @@ func kubeconfigSchema() *schema.Schema {
 }
 
 func kubeconfigUnmarshal(i interface{}) client.Config {
-	c := client.Config{}
+	var c client.Config
 
 	// If optional block is not defined, return empty struct.
 	if i == nil {

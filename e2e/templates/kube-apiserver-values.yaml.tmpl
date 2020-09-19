@@ -1,0 +1,31 @@
+serverKey: |
+  ${indent(2, trimspace(server_key))}
+serverCertificate: |
+  ${indent(2, trimspace(server_certificate))}
+serviceAccountPublicKey: |
+  ${indent(2, trimspace(service_account_public_key))}
+caCertificate: |
+  ${indent(2, trimspace(ca_certificate))}
+frontProxyClientKey: |
+  ${indent(2, trimspace(front_proxy_client_key))}
+frontProxyClientCertificate: |
+  ${indent(2, trimspace(front_proxy_client_certificate))}
+frontProxyCACertificate: |
+  ${indent(2, trimspace(front_proxy_ca_certificate))}
+kubeletClientCertificate: |
+  ${indent(2, trimspace(kubelet_client_certificate))}
+kubeletClientKey: |
+  ${indent(2, trimspace(kubelet_client_key))}
+etcdCACertificate: |
+  ${indent(2, trimspace(etcd_ca_certificate))}
+etcdClientCertificate: |
+  ${indent(2, trimspace(etcd_client_certificate))}
+etcdClientKey: |
+  ${indent(2, trimspace(etcd_client_key))}
+
+etcdServers:
+%{ for server in etcd_servers ~}
+- ${server}
+%{ endfor ~}
+serviceCIDR: "11.0.0.0/24"
+replicas: ${replicas}

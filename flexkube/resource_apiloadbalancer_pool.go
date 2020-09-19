@@ -1,7 +1,7 @@
 package flexkube
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/apiloadbalancer"
 	"github.com/flexkube/libflexkube/pkg/types"
@@ -9,10 +9,10 @@ import (
 
 func resourceAPILoadBalancerPool() *schema.Resource {
 	return &schema.Resource{
-		Create:        resourceCreate(apiLoadBalancersUnmarshal),
-		Read:          resourceRead(apiLoadBalancersUnmarshal),
-		Delete:        resourceDelete(apiLoadBalancersUnmarshal, "api_load_balancer"),
-		Update:        resourceCreate(apiLoadBalancersUnmarshal),
+		CreateContext: resourceCreate(apiLoadBalancersUnmarshal),
+		ReadContext:   resourceRead(apiLoadBalancersUnmarshal),
+		DeleteContext: resourceDelete(apiLoadBalancersUnmarshal, "api_load_balancer"),
+		UpdateContext: resourceCreate(apiLoadBalancersUnmarshal),
 		CustomizeDiff: resourceDiff(apiLoadBalancersUnmarshal),
 		Schema: withCommonFields(map[string]*schema.Schema{
 			"image":             optionalString(false),

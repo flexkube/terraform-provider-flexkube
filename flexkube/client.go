@@ -3,7 +3,7 @@ package flexkube
 import (
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/kubernetes/client"
 	"github.com/flexkube/libflexkube/pkg/types"
@@ -48,7 +48,7 @@ func clientUnmarshal(i interface{}) *client.Config {
 }
 
 func clientSchema(computed bool) *schema.Schema { //nolint:unparam
-	return optionalBlock(computed, func(computed bool) map[string]*schema.Schema {
+	return optionalBlock(computed, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"server":             optionalString(computed),
 			"ca_certificate":     optionalString(computed),

@@ -4,12 +4,11 @@ package flexkube
 import (
 	"sync"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 // Provider returns Terraform Flexkube provider instance.
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	return &schema.Provider{
 		ResourcesMap: map[string]*schema.Resource{
 			"flexkube_etcd_cluster":         resourceEtcdCluster(),

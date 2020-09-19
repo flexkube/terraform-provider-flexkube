@@ -93,6 +93,38 @@ A `docker` block supports the following:
 
 * `host` - (Optional) URL used to talk to Docker runtime. Defaults to `unix:///var/run/docker.sock`.
 
+---
+
+A `host` block supports the following:
+
+* `direct` - (Optional) A `direct` block as defined below. Mutually exclusive with all other fields in this block. If defined, container will be created on local machine.
+
+* `ssh` - (Optional) A `ssh` block as defined below. Mutually exclusive with all other fields in this block. If defined, container will be created on a remote machine using SSH connection.
+
+---
+
+A `direct` block does not support any arguments.
+
+---
+
+A `ssh` block supports the following:
+
+* `address` - (Required) An address where SSH client should connect to. Can be either hostname of IP address.
+
+* `port` - (Optional) Port where to open SSH connection. Defaults to `22`.
+
+* `user` - (Optional) Username to use when opening SSH connection. Defaults to `root`.
+
+* `password` - (Optional) Password to use for SSH authentication. Can be combined with `private_key` and SSH agent authentication methods.
+
+* `connection_timeout` - (Optional) Duration for how long to wait before connection attempts times out, expressed in [Go Duration format](https://golang.org/pkg/time/#ParseDuration). Defaults to `30s`.
+
+* `retry_timeout` - (Optional) Duration for how long to wait before giving up on connection attempts, expressed in [Go Duration format](https://golang.org/pkg/time/#ParseDuration). Defaults to `60s`.
+
+* `retry_interval` - (Optional) Duration for how long to wait between connection attempts, expressed in [Go Duration format](https://golang.org/pkg/time/#ParseDuration). Defaults to `1s`.
+
+* `private_key` - (Optional) PEM encoded privat key to be used for authentication. Can be combined with `password` and SSH agent authentication methods.
+
 ## Attribute Reference
 
 * `state` - A list of `host_configured_container` blocks as defined below. This attribute represents generated configuration of the managed containers. Sensitive values like configuration files content, environment variables or SSH password are replaced with SHA256 of the values. To get the actual value, use `state_sensitive` block.

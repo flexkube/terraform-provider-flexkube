@@ -1,7 +1,7 @@
 package flexkube
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/host"
 	"github.com/flexkube/libflexkube/pkg/host/transport/direct"
@@ -49,7 +49,7 @@ func hostUnmarshal(i interface{}) host.Host {
 }
 
 func hostSchema(computed bool) *schema.Schema {
-	return optionalBlock(computed, func(computed bool) map[string]*schema.Schema {
+	return optionalBlock(computed, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"direct": directSchema(computed),
 			"ssh":    sshSchema(computed),

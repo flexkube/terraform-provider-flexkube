@@ -1,1 +1,13 @@
-terraform-provider-flexkube
+/terraform-provider-flexkube
+/.env
+.terraform
+flatcar_production_qemu_image.img
+flatcar_production_qemu_image.img.bz2
+kubeconfig
+/.vagrant
+config.yaml
+state.yaml
+terraform.tfstate*
+variables.auto.tfvars
+/c.out
+crash.log

@@ -1,7 +1,7 @@
 package flexkube
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/kubelet"
 	"github.com/flexkube/libflexkube/pkg/types"
@@ -9,10 +9,10 @@ import (
 
 func resourceKubeletPool() *schema.Resource {
 	return &schema.Resource{
-		Create:        resourceCreate(kubeletPoolUnmarshal),
-		Read:          resourceRead(kubeletPoolUnmarshal),
-		Delete:        resourceDelete(kubeletPoolUnmarshal, "kubelet"),
-		Update:        resourceCreate(kubeletPoolUnmarshal),
+		CreateContext: resourceCreate(kubeletPoolUnmarshal),
+		ReadContext:   resourceRead(kubeletPoolUnmarshal),
+		DeleteContext: resourceDelete(kubeletPoolUnmarshal, "kubelet"),
+		UpdateContext: resourceCreate(kubeletPoolUnmarshal),
 		CustomizeDiff: resourceDiff(kubeletPoolUnmarshal),
 		Schema: withCommonFields(map[string]*schema.Schema{
 			"image":                     optionalString(false),

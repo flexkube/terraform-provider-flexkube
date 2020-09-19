@@ -1,13 +1,22 @@
 package flexkube
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/pki"
 	"github.com/flexkube/libflexkube/pkg/types"
 )
 
-func certificateMarshal(c *pki.Certificate) interface{} {
+func certificateMarshal(sensitive bool, c *pki.Certificate) interface{} {
+	if c == nil {
+		return nil
+	}
+
+	privateKey := string(c.PrivateKey)
+	if sensitive && privateKey != "" {
+		privateKey = sha256sum([]byte(privateKey))
+	}
+
 	return map[string]interface{}{
 		"organization":      c.Organization,
 		"rsa_bits":          c.RSABits,
@@ -20,27 +29,25 @@ func certificateMarshal(c *pki.Certificate) interface{} {
 		"dns_names":         stringSliceToInterfaceSlice(c.DNSNames),
 		"x509_certificate":  c.X509Certificate,
 		"public_key":        c.PublicKey,
-		"private_key":       c.PrivateKey,
+		"private_key":       privateKey,
 	}
 }
 
 func certificateUnmarshal(i interface{}) *pki.Certificate {
-	c := &pki.Certificate{}
-
 	if i == nil {
-		return c
+		return nil
 	}
 
 	j, ok := i.([]interface{})
 
 	if !ok || len(j) != 1 {
-		return c
+		return nil
 	}
 
-	k := j[0].(map[string]interface{})
+	k, ok := j[0].(map[string]interface{})
 
-	if len(j) == 0 {
-		return c
+	if !ok || len(j) == 0 {
+		return nil
 	}
 
 	return &pki.Certificate{
@@ -60,7 +67,7 @@ func certificateUnmarshal(i interface{}) *pki.Certificate {
 }
 
 func certificateBlockSchema(computed bool) *schema.Schema {
-	return optionalBlock(computed, certificateSchema)
+	return optionalBlock(computed, false, certificateSchema)
 }
 
 func certificateSchema(computed bool) map[string]*schema.Schema {

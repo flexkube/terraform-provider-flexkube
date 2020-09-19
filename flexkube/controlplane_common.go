@@ -1,14 +1,14 @@
 package flexkube
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/controlplane"
 	"github.com/flexkube/libflexkube/pkg/types"
 )
 
 func controlplaneCommonSchema() *schema.Schema {
-	return optionalBlock(false, func(computed bool) map[string]*schema.Schema {
+	return optionalBlock(false, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"kubernetes_ca_certificate":  optionalString(false),
 			"front_proxy_ca_certificate": optionalString(false),

@@ -1,7 +1,7 @@
 package flexkube
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/container/resource"
 	"github.com/flexkube/libflexkube/pkg/types"
@@ -9,11 +9,11 @@ import (
 
 func resourceContainers() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceCreate(containersUnmarshal),
+		CreateContext: resourceCreate(containersUnmarshal),
 		// Update should be exactly the same operation as Create.
-		Update:        resourceCreate(containersUnmarshal),
-		Read:          resourceRead(containersUnmarshal),
-		Delete:        resourceDelete(containersUnmarshal, "host_configured_container"),
+		UpdateContext: resourceCreate(containersUnmarshal),
+		ReadContext:   resourceRead(containersUnmarshal),
+		DeleteContext: resourceDelete(containersUnmarshal, "host_configured_container"),
 		CustomizeDiff: resourceDiff(containersUnmarshal),
 		Schema: withCommonFields(map[string]*schema.Schema{
 			// Configuration specified by the user.

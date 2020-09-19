@@ -1,7 +1,7 @@
 package flexkube
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/etcd"
 	"github.com/flexkube/libflexkube/pkg/types"
@@ -9,10 +9,10 @@ import (
 
 func resourceEtcdCluster() *schema.Resource {
 	return &schema.Resource{
-		Create:        resourceCreate(etcdClusterUnmarshal),
-		Read:          resourceRead(etcdClusterUnmarshal),
-		Delete:        resourceDelete(etcdClusterUnmarshal, "member"),
-		Update:        resourceCreate(etcdClusterUnmarshal),
+		CreateContext: resourceCreate(etcdClusterUnmarshal),
+		ReadContext:   resourceRead(etcdClusterUnmarshal),
+		DeleteContext: resourceDelete(etcdClusterUnmarshal, "member"),
+		UpdateContext: resourceCreate(etcdClusterUnmarshal),
 		CustomizeDiff: resourceDiff(etcdClusterUnmarshal),
 		Schema: withCommonFields(map[string]*schema.Schema{
 			"image":          optionalString(false),
@@ -27,7 +27,7 @@ func resourceEtcdCluster() *schema.Resource {
 func etcdClusterUnmarshal(d getter, includeState bool) types.ResourceConfig {
 	c := &etcd.Cluster{
 		Image:         d.Get("image").(string),
-		CACertificate: types.Certificate(d.Get("ca_certificate").(string)),
+		CACertificate: d.Get("ca_certificate").(string),
 		Members:       membersUnmarshal(d.Get("member")),
 		PKI:           unmarshalPKI(d),
 	}

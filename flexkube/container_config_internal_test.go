@@ -79,7 +79,6 @@ func TestContainerConfigMarshal(t *testing.T) {
 	}
 }
 
-//nolint:funlen
 func TestContainerConfigMarshalSensitive(t *testing.T) {
 	cc := types.ContainerConfig{
 		Env: map[string]string{

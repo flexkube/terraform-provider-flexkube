@@ -1,7 +1,7 @@
 package flexkube
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/container/runtime/docker"
 )
@@ -34,7 +34,7 @@ func dockerUnmarshal(i interface{}) *docker.Config {
 }
 
 func dockerSchema(computed bool) *schema.Schema {
-	return optionalBlock(computed, func(computed bool) map[string]*schema.Schema {
+	return optionalBlock(computed, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"host": optionalString(computed),
 		}
