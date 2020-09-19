@@ -7,7 +7,7 @@ import (
 )
 
 func kubeSchedulerSchema() *schema.Schema {
-	return optionalBlock(false, func(computed bool) map[string]*schema.Schema {
+	return optionalBlock(false, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"common":     controlplaneCommonSchema(),
 			"host":       hostSchema(false),

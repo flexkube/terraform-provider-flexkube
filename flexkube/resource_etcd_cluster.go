@@ -27,7 +27,7 @@ func resourceEtcdCluster() *schema.Resource {
 func etcdClusterUnmarshal(d getter, includeState bool) types.ResourceConfig {
 	c := &etcd.Cluster{
 		Image:         d.Get("image").(string),
-		CACertificate: types.Certificate(d.Get("ca_certificate").(string)),
+		CACertificate: d.Get("ca_certificate").(string),
 		Members:       membersUnmarshal(d.Get("member")),
 		PKI:           unmarshalPKI(d),
 	}

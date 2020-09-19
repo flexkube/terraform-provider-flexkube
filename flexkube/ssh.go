@@ -80,7 +80,7 @@ func sshUnmarshal(i interface{}) *ssh.Config {
 }
 
 func sshSchema(computed bool) *schema.Schema {
-	return optionalBlock(computed, func(computed bool) map[string]*schema.Schema {
+	return optionalBlock(computed, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"address":            optionalString(computed),
 			"port":               optionalInt(computed),

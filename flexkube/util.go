@@ -120,11 +120,11 @@ func requiredBlock(computed bool, elem func(bool) *schema.Resource) *schema.Sche
 	return s
 }
 
-func optionalBlock(computed bool, elem func(bool) map[string]*schema.Schema) *schema.Schema {
+func optionalBlock(computed bool, sensitive bool, elem func(bool) map[string]*schema.Schema) *schema.Schema {
 	s := &schema.Schema{
-		Type:     schema.TypeList,
-		Optional: true,
-		Computed: computed,
+		Type:      schema.TypeList,
+		Computed:  computed,
+		Sensitive: sensitive,
 		Elem: &schema.Resource{
 			Schema: elem(computed),
 		},
@@ -132,6 +132,7 @@ func optionalBlock(computed bool, elem func(bool) map[string]*schema.Schema) *sc
 
 	if !computed {
 		s.MaxItems = blockMaxItems
+		s.Optional = true
 	}
 
 	return s
@@ -148,13 +149,17 @@ func requiredList(computed, sensitive bool, elem func(bool) *schema.Resource) *s
 }
 
 func optionalList(computed bool, elem func(bool) *schema.Resource) *schema.Schema {
-	return &schema.Schema{
+	s := &schema.Schema{
 		Type:     schema.TypeList,
 		Computed: computed,
-		Required: !computed,
-		Optional: true,
 		Elem:     elem(computed),
 	}
+
+	if !computed {
+		s.Optional = true
+	}
+
+	return s
 }
 
 func sha256sum(data []byte) string {
@@ -467,10 +472,14 @@ func stringListUnmarshal(i interface{}) []string {
 	r := []string{}
 
 	if i == nil {
-		return r
+		return nil
 	}
 
-	j := i.([]interface{})
+	j, ok := i.([]interface{})
+
+	if !ok || len(j) == 0 {
+		return nil
+	}
 
 	for _, v := range j {
 		r = append(r, v.(string))

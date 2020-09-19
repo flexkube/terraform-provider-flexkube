@@ -15,7 +15,7 @@ func TestKubeletUnmarshal(t *testing.T) {
 			Address:                 "h",
 			Image:                   "a",
 			KubernetesCACertificate: "b",
-			ClusterDNSIPs:           []string{},
+			ClusterDNSIPs:           nil,
 			Name:                    "g",
 			Taints:                  nil,
 			Labels:                  nil,

@@ -12,7 +12,10 @@ func TestPKI(t *testing.T) {
 resource "flexkube_pki" "pki" {
 	etcd {
 		peer_certificates {
-			organization = "foo"
+			common_name = "foo"
+			certificate {
+				organization = "foo"
+			}
 		}
 	}
 

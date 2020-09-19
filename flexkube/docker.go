@@ -34,7 +34,7 @@ func dockerUnmarshal(i interface{}) *docker.Config {
 }
 
 func dockerSchema(computed bool) *schema.Schema {
-	return optionalBlock(computed, func(computed bool) map[string]*schema.Schema {
+	return optionalBlock(computed, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"host": optionalString(computed),
 		}

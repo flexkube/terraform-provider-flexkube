@@ -37,7 +37,7 @@ func runtimeUnmarshal(i interface{}) container.RuntimeConfig {
 }
 
 func runtimeSchema(computed bool) *schema.Schema {
-	return optionalBlock(computed, func(computed bool) map[string]*schema.Schema {
+	return optionalBlock(computed, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"docker": dockerSchema(computed),
 		}

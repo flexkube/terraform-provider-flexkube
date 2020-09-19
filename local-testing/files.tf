@@ -69,27 +69,27 @@ resource "local_file" "kubelet_pool_state" {
 }
 
 resource "local_file" "etcd_ca_certificate" {
-  content  = flexkube_pki.pki.etcd[0].ca[0].x509_certificate
+  content  = flexkube_pki.pki.state_sensitive[0].etcd[0].ca[0].x509_certificate
   filename = "./resources/etcd-cluster/ca.pem"
 }
 
 resource "local_file" "etcd_root_user_certificate" {
-  content  = flexkube_pki.pki.etcd[0].client_certificates[index(flexkube_pki.pki.etcd[0].client_cns, "root")].x509_certificate
+  content  = local.client_certificates_map["root"].x509_certificate
   filename = "./resources/etcd-cluster/client.pem"
 }
 
 resource "local_file" "etcd_root_user_private_key" {
-  sensitive_content = flexkube_pki.pki.etcd[0].client_certificates[index(flexkube_pki.pki.etcd[0].client_cns, "root")].private_key
+  sensitive_content = local.client_certificates_map["root"].private_key
   filename          = "./resources/etcd-cluster/client.key"
 }
 
 resource "local_file" "etcd_prometheus_user_certificate" {
-  content  = flexkube_pki.pki.etcd[0].client_certificates[index(flexkube_pki.pki.etcd[0].client_cns, "prometheus")].x509_certificate
+  content  = local.client_certificates_map["prometheus"].x509_certificate
   filename = "./resources/etcd-cluster/prometheus_client.pem"
 }
 
 resource "local_file" "etcd_prometheus_user_private_key" {
-  sensitive_content = flexkube_pki.pki.etcd[0].client_certificates[index(flexkube_pki.pki.etcd[0].client_cns, "prometheus")].private_key
+  sensitive_content = local.client_certificates_map["prometheus"].private_key
   filename          = "./resources/etcd-cluster/prometheus_client.key"
 }
 

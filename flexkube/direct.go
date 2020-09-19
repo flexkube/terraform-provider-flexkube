@@ -15,7 +15,7 @@ func directUnmarshal(i interface{}) *direct.Config {
 }
 
 func directSchema(computed bool) *schema.Schema {
-	return optionalBlock(computed, func(computed bool) map[string]*schema.Schema {
+	return optionalBlock(computed, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{}
 	})
 }

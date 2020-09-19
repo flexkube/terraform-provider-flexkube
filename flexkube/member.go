@@ -4,7 +4,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/etcd"
-	"github.com/flexkube/libflexkube/pkg/types"
 )
 
 func membersUnmarshal(i interface{}) map[string]etcd.Member {
@@ -18,14 +17,14 @@ func membersUnmarshal(i interface{}) map[string]etcd.Member {
 		m := etcd.Member{
 			Name:              t["name"].(string),
 			Image:             t["image"].(string),
-			CACertificate:     types.Certificate(t["ca_certificate"].(string)),
-			PeerCertificate:   types.Certificate(t["peer_certificate"].(string)),
-			PeerKey:           types.PrivateKey(t["peer_key"].(string)),
+			CACertificate:     t["ca_certificate"].(string),
+			PeerCertificate:   t["peer_certificate"].(string),
+			PeerKey:           t["peer_key"].(string),
 			PeerAddress:       t["peer_address"].(string),
 			InitialCluster:    t["initial_cluster"].(string),
 			PeerCertAllowedCN: t["peer_cert_allowed_cn"].(string),
-			ServerCertificate: types.Certificate(t["server_certificate"].(string)),
-			ServerKey:         types.PrivateKey(t["server_key"].(string)),
+			ServerCertificate: t["server_certificate"].(string),
+			ServerKey:         t["server_key"].(string),
 			ServerAddress:     t["server_address"].(string),
 		}
 

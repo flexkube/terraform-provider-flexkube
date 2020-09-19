@@ -6,15 +6,15 @@ import (
 	"github.com/flexkube/libflexkube/pkg/pki"
 )
 
-func pkiKubeAPIServerMarshal(e *pki.KubeAPIServer) interface{} {
+func pkiKubeAPIServerMarshal(e *pki.KubeAPIServer, sensitive bool) interface{} {
 	return []interface{}{
 		map[string]interface{}{
-			"certificate":                    []interface{}{certificateMarshal(&e.Certificate)},
+			"certificate":                    []interface{}{certificateMarshal(sensitive, &e.Certificate)},
 			"external_names":                 stringSliceToInterfaceSlice(e.ExternalNames),
 			"server_ips":                     stringSliceToInterfaceSlice(e.ServerIPs),
-			"server_certificate":             []interface{}{certificateMarshal(e.ServerCertificate)},
-			"kubelet_certificate":            []interface{}{certificateMarshal(e.KubeletCertificate)},
-			"front_proxy_client_certificate": []interface{}{certificateMarshal(e.FrontProxyClientCertificate)},
+			"server_certificate":             []interface{}{certificateMarshal(sensitive, e.ServerCertificate)},
+			"kubelet_certificate":            []interface{}{certificateMarshal(sensitive, e.KubeletCertificate)},
+			"front_proxy_client_certificate": []interface{}{certificateMarshal(sensitive, e.FrontProxyClientCertificate)},
 		},
 	}
 }
@@ -37,18 +37,23 @@ func pkiKubeAPIServerUnmarshal(i interface{}) *pki.KubeAPIServer {
 		return a
 	}
 
-	return &pki.KubeAPIServer{
-		Certificate:                 *certificateUnmarshal(k["certificate"]),
+	ka := &pki.KubeAPIServer{
 		ExternalNames:               stringListUnmarshal(k["external_names"]),
 		ServerIPs:                   stringListUnmarshal(k["server_ips"]),
 		ServerCertificate:           certificateUnmarshal(k["server_certificate"]),
 		KubeletCertificate:          certificateUnmarshal(k["kubelet_certificate"]),
 		FrontProxyClientCertificate: certificateUnmarshal(k["front_proxy_client_certificate"]),
 	}
+
+	if c := certificateUnmarshal(k["certificate"]); c != nil {
+		ka.Certificate = *c
+	}
+
+	return ka
 }
 
 func pkiKubeAPIServerSchema(computed bool) *schema.Schema {
-	return optionalBlock(computed, func(computed bool) map[string]*schema.Schema {
+	return optionalBlock(computed, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"certificate":                    certificateBlockSchema(computed),
 			"external_names":                 optionalStringList(computed),

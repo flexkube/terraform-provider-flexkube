@@ -49,19 +49,21 @@ tokens:
   token-secret: ${random_password.bootstrap_token_secret.result}
 EOF
 
+  client_certificates_map = { for index, v in flexkube_pki.pki.state_sensitive[0].etcd[0].client_certificates : v.common_name => v.certificate[0] }
+
   kube_apiserver_values = templatefile("./templates/kube-apiserver-values.yaml.tmpl", {
-    server_key                     = flexkube_pki.pki.kubernetes[0].kube_api_server[0].server_certificate[0].private_key
-    server_certificate             = flexkube_pki.pki.kubernetes[0].kube_api_server[0].server_certificate[0].x509_certificate
-    service_account_public_key     = flexkube_pki.pki.kubernetes[0].service_account_certificate[0].public_key
-    ca_certificate                 = flexkube_pki.pki.kubernetes[0].ca[0].x509_certificate
-    front_proxy_client_key         = flexkube_pki.pki.kubernetes[0].kube_api_server[0].front_proxy_client_certificate[0].private_key
-    front_proxy_client_certificate = flexkube_pki.pki.kubernetes[0].kube_api_server[0].front_proxy_client_certificate[0].x509_certificate
-    front_proxy_ca_certificate     = flexkube_pki.pki.kubernetes[0].front_proxy_ca[0].x509_certificate
-    kubelet_client_certificate     = flexkube_pki.pki.kubernetes[0].kube_api_server[0].kubelet_certificate[0].x509_certificate
-    kubelet_client_key             = flexkube_pki.pki.kubernetes[0].kube_api_server[0].kubelet_certificate[0].private_key
-    etcd_ca_certificate            = flexkube_pki.pki.etcd[0].ca[0].x509_certificate
-    etcd_client_certificate        = flexkube_pki.pki.etcd[0].client_certificates[index(flexkube_pki.pki.etcd[0].client_cns, "kube-apiserver")].x509_certificate
-    etcd_client_key                = flexkube_pki.pki.etcd[0].client_certificates[index(flexkube_pki.pki.etcd[0].client_cns, "kube-apiserver")].private_key
+    server_key                     = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].server_certificate[0].private_key
+    server_certificate             = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].server_certificate[0].x509_certificate
+    service_account_public_key     = flexkube_pki.pki.state_sensitive[0].kubernetes[0].service_account_certificate[0].public_key
+    ca_certificate                 = flexkube_pki.pki.state_sensitive[0].kubernetes[0].ca[0].x509_certificate
+    front_proxy_client_key         = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].front_proxy_client_certificate[0].private_key
+    front_proxy_client_certificate = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].front_proxy_client_certificate[0].x509_certificate
+    front_proxy_ca_certificate     = flexkube_pki.pki.state_sensitive[0].kubernetes[0].front_proxy_ca[0].x509_certificate
+    kubelet_client_certificate     = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].kubelet_certificate[0].x509_certificate
+    kubelet_client_key             = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].kubelet_certificate[0].private_key
+    etcd_ca_certificate            = flexkube_pki.pki.state_sensitive[0].etcd[0].ca[0].x509_certificate
+    etcd_client_certificate        = local.client_certificates_map["kube-apiserver"].x509_certificate
+    etcd_client_key                = local.client_certificates_map["kube-apiserver"].private_key
     etcd_servers                   = local.etcd_servers
     replicas                       = var.controllers_count
   })
@@ -69,10 +71,10 @@ EOF
   api_servers = formatlist("%s:%d", local.controller_ips, local.api_port)
 
   kubernetes_values = templatefile("./templates/values.yaml.tmpl", {
-    service_account_private_key = flexkube_pki.pki.kubernetes[0].service_account_certificate[0].private_key
-    kubernetes_ca_key           = flexkube_pki.pki.kubernetes[0].ca[0].private_key
-    root_ca_certificate         = flexkube_pki.pki.root_ca[0].x509_certificate
-    kubernetes_ca_certificate   = flexkube_pki.pki.kubernetes[0].ca[0].x509_certificate
+    service_account_private_key = flexkube_pki.pki.state_sensitive[0].kubernetes[0].service_account_certificate[0].private_key
+    kubernetes_ca_key           = flexkube_pki.pki.state_sensitive[0].kubernetes[0].ca[0].private_key
+    root_ca_certificate         = flexkube_pki.pki.state_sensitive[0].root_ca[0].x509_certificate
+    kubernetes_ca_certificate   = flexkube_pki.pki.state_sensitive[0].kubernetes[0].ca[0].x509_certificate
     api_servers                 = local.api_servers
     replicas                    = var.controllers_count
   })
@@ -123,9 +125,9 @@ EOF
   kubeconfig_admin = templatefile("./templates/kubeconfig.tmpl", {
     name        = "admin"
     server      = "https://${local.first_controller_ip}:${local.api_port}"
-    ca_cert     = base64encode(flexkube_pki.pki.kubernetes[0].ca[0].x509_certificate)
-    client_cert = base64encode(flexkube_pki.pki.kubernetes[0].admin_certificate[0].x509_certificate)
-    client_key  = base64encode(flexkube_pki.pki.kubernetes[0].admin_certificate[0].private_key)
+    ca_cert     = base64encode(flexkube_pki.pki.state_sensitive[0].kubernetes[0].ca[0].x509_certificate)
+    client_cert = base64encode(flexkube_pki.pki.state_sensitive[0].kubernetes[0].admin_certificate[0].x509_certificate)
+    client_key  = base64encode(flexkube_pki.pki.state_sensitive[0].kubernetes[0].admin_certificate[0].private_key)
   })
 
   network_plugin = var.network_plugin == "kubenet" ? "kubenet" : "cni"
