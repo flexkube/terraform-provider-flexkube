@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-sdk-go v1.34.24 // indirect
 	github.com/containerd/containerd v1.4.1 // indirect
 	github.com/emicklei/go-restful v2.14.2+incompatible // indirect
-	github.com/flexkube/libflexkube v0.4.3-0.20200918072833-8656218e4711
+	github.com/flexkube/libflexkube v0.4.3-0.20200919203631-f1ceadde8ba4
 	github.com/go-logr/logr v0.2.1 // indirect
 	github.com/google/go-cmp v0.5.2
 	github.com/hashicorp/go-hclog v0.14.1 // indirect
