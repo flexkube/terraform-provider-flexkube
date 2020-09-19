@@ -2,12 +2,24 @@ package flexkube
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"sigs.k8s.io/yaml"
 
 	"github.com/flexkube/libflexkube/pkg/helm/release"
 )
+
+func validateYAML(v interface{}, s string) ([]string, []error) {
+	var i interface{}
+
+	if err := yaml.Unmarshal([]byte(v.(string)), &i); err != nil {
+		return nil, []error{fmt.Errorf("parsing field as YAML: %w", err)}
+	}
+
+	return nil, nil
+}
 
 func resourceHelmRelease() *schema.Resource {
 	return &schema.Resource{
@@ -17,9 +29,10 @@ func resourceHelmRelease() *schema.Resource {
 		UpdateContext: resourceHelmReleaseCreate,
 		Schema: map[string]*schema.Schema{
 			"kubeconfig": {
-				Type:      schema.TypeString,
-				Required:  true,
-				Sensitive: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				Sensitive:    true,
+				ValidateFunc: validateYAML,
 			},
 			"namespace": {
 				Type:     schema.TypeString,
@@ -34,9 +47,10 @@ func resourceHelmRelease() *schema.Resource {
 				Required: true,
 			},
 			"values": {
-				Type:      schema.TypeString,
-				Optional:  true,
-				Sensitive: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				Sensitive:    true,
+				ValidateFunc: validateYAML,
 			},
 			"version": {
 				Type:     schema.TypeString,
