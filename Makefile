@@ -90,6 +90,14 @@ all-cover: build build-test test-cover lint
 test-cover: build-test
 	$(GOTEST) -run $(GO_TESTS) -coverprofile=$(PROFILEFILE) $(GO_PACKAGES)
 
+.PHONY: cover-browse
+cover-browse:
+	go tool cover -html=$(PROFILEFILE)
+
+.PHONY: test-cover-browse
+test-cover-browse: PROFILEFILE=c.out
+test-cover-browse: test-cover cover-browse
+
 .PHONY: cover-upload
 cover-upload: codecov
 	# Make codeclimate as command, as we need to run test-cover twice and make deduplicates that.
