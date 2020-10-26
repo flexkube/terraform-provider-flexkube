@@ -13,8 +13,11 @@ GOBUILD=CGO_ENABLED=$(CGO_ENABLED) $(GOCMD) build -v -buildmode=exe -ldflags $(L
 GO_PACKAGES=./...
 GO_TESTS=^.*$
 
-GOLANGCI_LINT_VERSION=v1.30.0
-DISABLED_LINTERS=gci,goerr113
+GOLANGCI_LINT_VERSION=v1.32.0
+# gci              - As we use formatting rules from different linter and they are conflicting.
+# goerr113         - Disabled until we implement some error types and migrate to use them.
+# exhaustivestruct - To be able to make use of Go zero-value feature.
+DISABLED_LINTERS=gci,goerr113,exhaustivestruct
 
 BIN_PATH=$$HOME/bin
 

@@ -9,9 +9,9 @@ This provider also provides `flexkube_helm_release` resource, so you can use it 
 ```hcl
 terraform {
   required_providers {
-    sshcommand = {
+    flexkube = {
       source  = "flexkube/flexkube"
-      version = "0.3.2"
+      version = "0.4.1"
     }
   }
 }
