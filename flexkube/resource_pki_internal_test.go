@@ -8,6 +8,8 @@ import (
 )
 
 func TestPKI(t *testing.T) {
+	t.Parallel()
+
 	config := `
 resource "flexkube_pki" "pki" {
 	etcd {

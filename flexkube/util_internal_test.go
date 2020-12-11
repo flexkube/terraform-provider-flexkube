@@ -19,6 +19,8 @@ import (
 
 // saveState() tests.
 func TestSaveStateBadScheme(t *testing.T) {
+	t.Parallel()
+
 	r := resourceContainers()
 	delete(r.Schema, stateYAMLSchemaKey)
 
@@ -31,6 +33,8 @@ func TestSaveStateBadScheme(t *testing.T) {
 
 // resourceDelete() tests.
 func TestResourceDeleteRuntimeFail(t *testing.T) {
+	t.Parallel()
+
 	// Get the resource object we will work on.
 	r := resourceContainers()
 	r.DeleteContext = resourceDelete(containersUnmarshal, stateSensitiveSchemaKey)
@@ -74,12 +78,14 @@ func TestResourceDeleteRuntimeFail(t *testing.T) {
 	dn := r.Data(d.State())
 
 	// Finally, try to call Delete.
-	if err := r.DeleteContext(context.TODO(), dn, nil); err == nil {
-		t.Fatalf("destroying should fail with unreachable runtime")
+	if err := r.DeleteContext(context.TODO(), dn, nil); err != nil {
+		t.Fatalf("destroying should work with unreachable runtime: %v", err)
 	}
 }
 
 func TestResourceDeleteEmpty(t *testing.T) {
+	t.Parallel()
+
 	r := resourceContainers()
 	r.DeleteContext = resourceDelete(containersUnmarshal, stateSensitiveSchemaKey)
 
@@ -117,6 +123,8 @@ func TestResourceDeleteEmpty(t *testing.T) {
 }
 
 func TestResourceDeleteEmptyState(t *testing.T) {
+	t.Parallel()
+
 	r := resourceContainers()
 
 	if err := r.DeleteContext(context.TODO(), r.Data(&terraform.InstanceState{}), nil); err == nil {
@@ -125,6 +133,8 @@ func TestResourceDeleteEmptyState(t *testing.T) {
 }
 
 func TestResourceDeleteBadKey(t *testing.T) {
+	t.Parallel()
+
 	r := resourceContainers()
 	r.DeleteContext = resourceDelete(containersUnmarshal, "foo")
 
@@ -135,6 +145,8 @@ func TestResourceDeleteBadKey(t *testing.T) {
 
 // newResource() tests.
 func TestNewResourceFailRefresh(t *testing.T) {
+	t.Parallel()
+
 	cc := &resource.Containers{
 		State: container.ContainersState{
 			"foo": &container.HostConfiguredContainer{
@@ -160,13 +172,15 @@ func TestNewResourceFailRefresh(t *testing.T) {
 		},
 	}
 
-	if _, err := newResource(cc, true); err == nil {
-		t.Fatalf("should check for errors when checking current state")
+	if _, err := newResource(cc, true); err != nil {
+		t.Fatalf("should not return any errors: %v", err)
 	}
 }
 
 // resourceCreate() tests.
 func TestResourceCreate(t *testing.T) {
+	t.Parallel()
+
 	r := resourceContainers()
 
 	s := container.ContainersState{
@@ -199,6 +213,8 @@ func TestResourceCreate(t *testing.T) {
 }
 
 func TestResourceCreateFailInitialize(t *testing.T) {
+	t.Parallel()
+
 	r := resourceContainers()
 
 	s := container.ContainersState{
@@ -232,6 +248,8 @@ func TestResourceCreateFailInitialize(t *testing.T) {
 
 // resourceRead() tests.
 func TestResourceRead(t *testing.T) {
+	t.Parallel()
+
 	r := resourceContainers()
 
 	s := container.ContainersState{
@@ -264,6 +282,8 @@ func TestResourceRead(t *testing.T) {
 }
 
 func TestResourceReadFailInitialize(t *testing.T) {
+	t.Parallel()
+
 	r := resourceContainers()
 
 	s := container.ContainersState{
@@ -296,6 +316,8 @@ func TestResourceReadFailInitialize(t *testing.T) {
 }
 
 func TestStringMapMarshal(t *testing.T) {
+	t.Parallel()
+
 	f := map[string]string{
 		"/foo": "bar",
 	}
@@ -310,6 +332,8 @@ func TestStringMapMarshal(t *testing.T) {
 }
 
 func TestStringMapMarshalSensitive(t *testing.T) {
+	t.Parallel()
+
 	f := map[string]string{
 		"/foo": "bar",
 	}
@@ -324,6 +348,8 @@ func TestStringMapMarshalSensitive(t *testing.T) {
 }
 
 func TestStringMapMarshalDontChecksumEmpty(t *testing.T) {
+	t.Parallel()
+
 	f := map[string]string{
 		"/foo": "",
 	}
@@ -338,6 +364,8 @@ func TestStringMapMarshalDontChecksumEmpty(t *testing.T) {
 }
 
 func TestStringMapUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	i := map[string]interface{}{
 		"/foo": "bar",
 	}
@@ -352,6 +380,8 @@ func TestStringMapUnmarshal(t *testing.T) {
 }
 
 func TestStringMapUnmarshalEmpty(t *testing.T) {
+	t.Parallel()
+
 	var e map[string]string
 
 	if diff := cmp.Diff(stringMapUnmarshal(nil), e); diff != "" {

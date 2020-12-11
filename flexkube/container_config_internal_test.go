@@ -12,6 +12,8 @@ const examplePort = 8080
 
 //nolint:funlen
 func TestContainerConfigMarshal(t *testing.T) {
+	t.Parallel()
+
 	cc := types.ContainerConfig{
 		Name:       "foo",
 		Image:      "bar",
@@ -80,6 +82,8 @@ func TestContainerConfigMarshal(t *testing.T) {
 }
 
 func TestContainerConfigMarshalSensitive(t *testing.T) {
+	t.Parallel()
+
 	cc := types.ContainerConfig{
 		Env: map[string]string{
 			"foo": "bar",
@@ -113,6 +117,8 @@ func TestContainerConfigMarshalSensitive(t *testing.T) {
 
 //nolint:funlen
 func TestContainerConfigUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	cc := types.ContainerConfig{
 		Name:       "foo",
 		Image:      "bar",

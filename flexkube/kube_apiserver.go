@@ -11,23 +11,23 @@ func kubeAPIServerSchema() *schema.Schema {
 	return requiredBlock(false, func(computed bool) *schema.Resource {
 		return &schema.Resource{
 			Schema: map[string]*schema.Schema{
-				"common":                     controlplaneCommonSchema(),
-				"host":                       hostSchema(false),
-				"api_server_certificate":     optionalString(false),
-				"api_server_key":             sensitiveString(true),
-				"front_proxy_certificate":    optionalString(false),
-				"front_proxy_key":            sensitiveString(true),
-				"kubelet_client_certificate": optionalString(false),
-				"kubelet_client_key":         sensitiveString(true),
-				"service_account_public_key": optionalString(false),
-				"etcd_ca_certificate":        optionalString(false),
-				"etcd_client_certificate":    optionalString(false),
-				"etcd_client_key":            sensitiveString(true),
-				"service_cidr":               optionalString(false),
-				"etcd_servers":               optionalStringList(false),
-				"bind_address":               optionalString(false),
-				"advertise_address":          optionalString(false),
-				"secure_port":                optionalInt(false),
+				"common":                      controlplaneCommonSchema(),
+				"host":                        hostSchema(false),
+				"api_server_certificate":      optionalString(false),
+				"api_server_key":              sensitiveString(true),
+				"front_proxy_certificate":     optionalString(false),
+				"front_proxy_key":             sensitiveString(true),
+				"kubelet_client_certificate":  optionalString(false),
+				"kubelet_client_key":          sensitiveString(true),
+				"service_account_private_key": sensitiveString(true),
+				"etcd_ca_certificate":         optionalString(false),
+				"etcd_client_certificate":     optionalString(false),
+				"etcd_client_key":             sensitiveString(true),
+				"service_cidr":                optionalString(false),
+				"etcd_servers":                optionalStringList(false),
+				"bind_address":                optionalString(false),
+				"advertise_address":           optionalString(false),
+				"secure_port":                 optionalInt(false),
 			},
 		}
 	})
@@ -65,7 +65,7 @@ func kubeAPIServerUnmarshal(i interface{}) controlplane.KubeAPIServer {
 
 	c.APIServerCertificate = types.Certificate(j["api_server_certificate"].(string))
 	c.APIServerKey = types.PrivateKey(j["api_server_key"].(string))
-	c.ServiceAccountPublicKey = j["service_account_public_key"].(string)
+	c.ServiceAccountPrivateKey = j["service_account_private_key"].(string)
 	c.BindAddress = j["bind_address"].(string)
 	c.AdvertiseAddress = j["advertise_address"].(string)
 	c.EtcdServers = etcdServers

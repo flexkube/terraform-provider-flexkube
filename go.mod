@@ -6,12 +6,8 @@ require (
 	cloud.google.com/go v0.66.0 // indirect
 	cloud.google.com/go/storage v1.11.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
-	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef // indirect
 	github.com/aws/aws-sdk-go v1.34.24 // indirect
-	github.com/containerd/containerd v1.4.1 // indirect
-	github.com/emicklei/go-restful v2.14.2+incompatible // indirect
-	github.com/flexkube/libflexkube v0.4.3
-	github.com/go-logr/logr v0.2.1 // indirect
+	github.com/flexkube/libflexkube v0.5.0
 	github.com/google/go-cmp v0.5.2
 	github.com/hashicorp/go-hclog v0.14.1 // indirect
 	github.com/hashicorp/go-multierror v1.1.0 // indirect
@@ -21,24 +17,12 @@ require (
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
-	github.com/moby/term v0.0.0-20200915141129-7f0af18e79f2 // indirect
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/zclconf/go-cty v1.6.1 // indirect
 	go.etcd.io/etcd v3.3.25+incompatible // indirect
-	go.uber.org/multierr v1.6.0 // indirect
-	go.uber.org/zap v1.16.0 // indirect
-	golang.org/x/sys v0.0.0-20200916084744-dbad9cb7cb7a // indirect
 	golang.org/x/tools v0.0.0-20200915201639-f4cefd1cb5ba // indirect
 	google.golang.org/api v0.32.0 // indirect
-	google.golang.org/genproto v0.0.0-20200915202801-9f80d0600517 // indirect
-	google.golang.org/grpc v1.32.0 // indirect
-	helm.sh/helm/v3 v3.3.1 // indirect
-	k8s.io/apiextensions-apiserver v0.19.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20200831175022-64514a1d5d59 // indirect
-	k8s.io/kubectl v0.19.1 // indirect
-	k8s.io/kubelet v0.19.1 // indirect
-	k8s.io/utils v0.0.0-20200912215256-4140de9c8800 // indirect
 	sigs.k8s.io/yaml v1.2.0
 )
 

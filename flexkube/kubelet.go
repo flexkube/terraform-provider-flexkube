@@ -35,6 +35,7 @@ func kubeletsUnmarshal(i interface{}) []kubelet.Kubelet {
 			SystemReserved:          stringMapUnmarshal(t["system_reserved"]),
 			KubeReserved:            stringMapUnmarshal(t["kube_reserved"]),
 			ExtraMounts:             mountsUnmarshal(t["mount"]),
+			ExtraArgs:               stringListUnmarshal(t["extra_args"]),
 		}
 
 		if v, ok := t["wait_for_node_ready"]; ok {
@@ -103,6 +104,7 @@ func kubeletSchema() *schema.Schema {
 				"pod_cidr":            optionalString(false),
 				"extra_mount":         mountsSchema(false),
 				"wait_for_node_ready": optionalBool(false),
+				"extra_args":          optionalStringList(false),
 			},
 		}
 	})

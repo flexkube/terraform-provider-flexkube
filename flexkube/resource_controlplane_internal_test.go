@@ -3,7 +3,6 @@ package flexkube
 import (
 	"context"
 	"regexp"
-	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -235,7 +234,7 @@ resource "flexkube_controlplane" "bootstrap" {
     front_proxy_key            = ""
     kubelet_client_certificate = ""
     kubelet_client_key         = ""
-    service_account_public_key = ""
+    service_account_private_key = ""
     etcd_ca_certificate        = ""
     etcd_client_certificate    = ""
     etcd_client_key            = ""
@@ -399,8 +398,8 @@ func TestControlplaneDestroy(t *testing.T) {
 		stateSensitiveSchemaKey: containersStateMarshal(cs, false),
 		"kube_apiserver": []interface{}{
 			map[string]interface{}{
-				"service_account_public_key": "foo",
-				"service_cidr":               "11.0.0.0/24",
+				"service_account_private_key": "foo",
+				"service_cidr":                "11.0.0.0/24",
 				"etcd_servers": []interface{}{
 					"foo",
 				},
@@ -422,12 +421,8 @@ func TestControlplaneDestroy(t *testing.T) {
 	dn := r.Data(d.State())
 
 	err := controlplaneDestroy(context.TODO(), dn, nil)
-	if err == nil {
-		t.Fatalf("destroying with unreachable container runtime should fail")
-	}
-
-	if !strings.Contains(err[0].Summary, "Is the docker daemon running") {
-		t.Fatalf("destroying should fail for unreachable runtime, got: %v", err)
+	if err != nil {
+		t.Fatalf("destroying with unreachable container runtime should work, got: %v", err)
 	}
 }
 
@@ -472,11 +467,7 @@ func TestControlplaneDestroyValidateConfiguration(t *testing.T) {
 	dn := r.Data(d.State())
 
 	err := controlplaneDestroy(context.TODO(), dn, nil)
-	if err == nil {
-		t.Fatalf("destroying with unreachable container runtime should fail")
-	}
-
-	if !strings.Contains(err[0].Summary, "Cannot connect to the Docker daemon") {
-		t.Fatalf("destroying should fail for unreachable runtime, got: %v", err)
+	if err != nil {
+		t.Fatalf("destroying with unreachable container runtime should work, got: %v", err)
 	}
 }

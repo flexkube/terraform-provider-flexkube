@@ -13,6 +13,8 @@ import (
 )
 
 func TestContainersStateMarshal(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
 	c := container.ContainersState{
 		"foo": &container.HostConfiguredContainer{
 			Container: container.Container{
@@ -84,6 +86,8 @@ func TestContainersStateMarshal(t *testing.T) { //nolint:funlen
 }
 
 func TestContainersStateUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := &container.ContainersState{
 		"foo": &container.HostConfiguredContainer{
 			Container: container.Container{

@@ -11,6 +11,8 @@ import (
 )
 
 func TestHostMarshal(t *testing.T) {
+	t.Parallel()
+
 	c := host.Host{
 		DirectConfig: &direct.Config{},
 		SSHConfig: &ssh.Config{
@@ -51,6 +53,8 @@ func TestHostMarshal(t *testing.T) {
 }
 
 func TestHostMarshalSensitive(t *testing.T) {
+	t.Parallel()
+
 	c := host.Host{
 		DirectConfig: &direct.Config{},
 		SSHConfig: &ssh.Config{
@@ -91,6 +95,8 @@ func TestHostMarshalSensitive(t *testing.T) {
 }
 
 func TestHostUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := host.Host{
 		DirectConfig: &direct.Config{},
 		SSHConfig: &ssh.Config{
@@ -131,6 +137,8 @@ func TestHostUnmarshal(t *testing.T) {
 }
 
 func TestHostUnmarshalEmpty(t *testing.T) {
+	t.Parallel()
+
 	h := host.Host{
 		DirectConfig: &direct.Config{},
 	}
@@ -141,6 +149,8 @@ func TestHostUnmarshalEmpty(t *testing.T) {
 }
 
 func TestHostUnmarshalEmptyBock(t *testing.T) {
+	t.Parallel()
+
 	h := host.Host{
 		DirectConfig: &direct.Config{},
 	}

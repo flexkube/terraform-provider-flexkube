@@ -9,6 +9,8 @@ import (
 )
 
 func TestPortsMarshal(t *testing.T) {
+	t.Parallel()
+
 	c := []types.PortMap{
 		{
 			IP:       "127.0.0.1",
@@ -31,6 +33,8 @@ func TestPortsMarshal(t *testing.T) {
 }
 
 func TestPortsUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := []types.PortMap{
 		{
 			IP:       "127.0.0.1",

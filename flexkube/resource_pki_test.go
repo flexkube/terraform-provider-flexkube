@@ -10,6 +10,8 @@ import (
 )
 
 func TestPKIPropagateEtcdPeersToServers(t *testing.T) {
+	t.Parallel()
+
 	config := `
 resource "flexkube_pki" "pki" {
 	etcd {

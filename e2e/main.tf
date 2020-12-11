@@ -54,7 +54,7 @@ EOF
   kube_apiserver_values = templatefile("./templates/kube-apiserver-values.yaml.tmpl", {
     server_key                     = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].server_certificate[0].private_key
     server_certificate             = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].server_certificate[0].x509_certificate
-    service_account_public_key     = flexkube_pki.pki.state_sensitive[0].kubernetes[0].service_account_certificate[0].public_key
+    service_account_private_key    = flexkube_pki.pki.state_sensitive[0].kubernetes[0].service_account_certificate[0].private_key
     ca_certificate                 = flexkube_pki.pki.state_sensitive[0].kubernetes[0].ca[0].x509_certificate
     front_proxy_client_key         = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].front_proxy_client_certificate[0].private_key
     front_proxy_client_certificate = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].front_proxy_client_certificate[0].x509_certificate
@@ -285,8 +285,8 @@ resource "flexkube_helm_release" "tls-bootstrapping" {
 resource "flexkube_helm_release" "coredns" {
   kubeconfig = local.kubeconfig_admin
   namespace  = "kube-system"
-  chart      = "stable/coredns"
-  version    = var.coredns_chart_version
+  chart      = var.coredns_helm_chart_source
+  version    = var.coredns_helm_chart_version
   name       = "coredns"
   values     = local.coredns_values
   wait       = true
@@ -300,8 +300,8 @@ resource "flexkube_helm_release" "coredns" {
 resource "flexkube_helm_release" "metrics-server" {
   kubeconfig = local.kubeconfig_admin
   namespace  = "kube-system"
-  chart      = "stable/metrics-server"
-  version    = var.metrics_server_chart_version
+  chart      = var.metrics_server_helm_chart_source
+  version    = var.metrics_server_helm_chart_version
   name       = "metrics-server"
   values     = local.metrics_server_values
   wait       = true
@@ -382,6 +382,27 @@ resource "flexkube_kubelet_pool" "controller" {
   taints = {
     "node-role.kubernetes.io/master" = "NoSchedule"
   }
+
+  extra_mount {
+    source = "/run/docker/libcontainerd/"
+    target = "/run/docker/libcontainerd"
+  }
+
+  extra_mount {
+    source = "/var/lib/containerd/"
+    target = "/var/lib/containerd"
+  }
+
+  extra_mount {
+    source = "/run/torcx/unpack/docker/bin/containerd-shim-runc-v2"
+    target = "/usr/bin/containerd-shim-runc-v2"
+  }
+
+  extra_args = [
+    "--container-runtime=remote",
+    "--container-runtime-endpoint=unix:///run/docker/libcontainerd/docker-containerd.sock",
+  ]
+
 
   ssh {
     user        = "core"
@@ -472,6 +493,26 @@ resource "flexkube_kubelet_pool" "workers" {
     "memory" = "100Mi"
     "cpu"    = "100m"
   }
+
+  extra_mount {
+    source = "/run/docker/libcontainerd/"
+    target = "/run/docker/libcontainerd"
+  }
+
+  extra_mount {
+    source = "/var/lib/containerd/"
+    target = "/var/lib/containerd"
+  }
+
+  extra_mount {
+    source = "/run/torcx/unpack/docker/bin/containerd-shim-runc-v2"
+    target = "/usr/bin/containerd-shim-runc-v2"
+  }
+
+  extra_args = [
+    "--container-runtime=remote",
+    "--container-runtime-endpoint=unix:///run/docker/libcontainerd/docker-containerd.sock",
+  ]
 
   ssh {
     user        = "core"

@@ -10,6 +10,8 @@ import (
 )
 
 func TestKubeletUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := []kubelet.Kubelet{
 		{
 			Address:                 "h",

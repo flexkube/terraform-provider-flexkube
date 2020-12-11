@@ -8,6 +8,8 @@ import (
 )
 
 func TestContainerStatusMarshal(t *testing.T) {
+	t.Parallel()
+
 	cs := types.ContainerStatus{
 		ID:     "foo",
 		Status: "running",
@@ -26,6 +28,8 @@ func TestContainerStatusMarshal(t *testing.T) {
 }
 
 func TestContainerStatusUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	cs := &types.ContainerStatus{
 		ID:     "foo",
 		Status: "running",

@@ -10,6 +10,8 @@ import (
 )
 
 func TestRuntimeMarshal(t *testing.T) {
+	t.Parallel()
+
 	c := container.RuntimeConfig{
 		Docker: docker.DefaultConfig(),
 	}
@@ -30,6 +32,8 @@ func TestRuntimeMarshal(t *testing.T) {
 }
 
 func TestRuntimeUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := container.RuntimeConfig{
 		Docker: docker.DefaultConfig(),
 	}
@@ -50,6 +54,8 @@ func TestRuntimeUnmarshal(t *testing.T) {
 }
 
 func TestRuntimeUnmarshalEmpty(t *testing.T) {
+	t.Parallel()
+
 	rc := container.RuntimeConfig{
 		Docker: docker.DefaultConfig(),
 	}
@@ -60,6 +66,8 @@ func TestRuntimeUnmarshalEmpty(t *testing.T) {
 }
 
 func TestRuntimeUnmarshalEmptyBock(t *testing.T) {
+	t.Parallel()
+
 	rc := container.RuntimeConfig{
 		Docker: docker.DefaultConfig(),
 	}

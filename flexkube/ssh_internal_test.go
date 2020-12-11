@@ -9,6 +9,8 @@ import (
 )
 
 func TestSSHMarshal(t *testing.T) {
+	t.Parallel()
+
 	c := ssh.Config{
 		Address:           "127.0.0.1",
 		Port:              examplePort,
@@ -39,6 +41,8 @@ func TestSSHMarshal(t *testing.T) {
 }
 
 func TestSSHMarshalSensitive(t *testing.T) {
+	t.Parallel()
+
 	c := ssh.Config{
 		Address:           "127.0.0.1",
 		Port:              examplePort,
@@ -69,6 +73,8 @@ func TestSSHMarshalSensitive(t *testing.T) {
 }
 
 func TestSSHMarshalSensitivePassword(t *testing.T) {
+	t.Parallel()
+
 	c := ssh.Config{
 		Address:           "127.0.0.1",
 		Port:              examplePort,
@@ -99,6 +105,8 @@ func TestSSHMarshalSensitivePassword(t *testing.T) {
 }
 
 func TestSSHMarshalSensitivePrivateKey(t *testing.T) {
+	t.Parallel()
+
 	c := ssh.Config{
 		Address:           "127.0.0.1",
 		Port:              examplePort,
@@ -129,6 +137,8 @@ func TestSSHMarshalSensitivePrivateKey(t *testing.T) {
 }
 
 func TestSSHUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := ssh.Config{
 		Address:           "127.0.0.1",
 		Port:              examplePort,
@@ -159,6 +169,8 @@ func TestSSHUnmarshal(t *testing.T) {
 }
 
 func TestSSHUnmarshalEmpty(t *testing.T) {
+	t.Parallel()
+
 	var c *ssh.Config
 
 	if diff := cmp.Diff(sshUnmarshal(nil), c); diff != "" {
@@ -167,6 +179,8 @@ func TestSSHUnmarshalEmpty(t *testing.T) {
 }
 
 func TestSSHUnmarshalEmptyBock(t *testing.T) {
+	t.Parallel()
+
 	var c *ssh.Config
 
 	if diff := cmp.Diff(sshUnmarshal(map[string]interface{}{}), c); diff != "" {

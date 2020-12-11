@@ -9,6 +9,8 @@ import (
 )
 
 func TestContainersPlanOnly(t *testing.T) {
+	t.Parallel()
+
 	config := `
 resource "flexkube_containers" "foo" {
   host_configured_container {
@@ -43,6 +45,8 @@ resource "flexkube_containers" "foo" {
 }
 
 func TestContainersCreateRuntimeError(t *testing.T) {
+	t.Parallel()
+
 	config := `
 resource "flexkube_containers" "foo" {
   host_configured_container {
@@ -78,6 +82,8 @@ resource "flexkube_containers" "foo" {
 }
 
 func TestContainersValidateFail(t *testing.T) {
+	t.Parallel()
+
 	config := `
 resource "flexkube_containers" "foo" {
   host_configured_container {

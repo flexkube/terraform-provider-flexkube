@@ -105,7 +105,7 @@ A `kube_apiserver` block supports the following:
 
 * `kubelet_client_key` - (Optional) PEM encoded X.509 certificate key for `kubelet_client_certificate`. Optional if `pki_yaml` top field is set.
 
-* `service_account_public_key` - (Optional) PEM encoded RSA public key used to verify service account tokens. Optional if `pki_yaml` top field is set.
+* `service_account_private_key` - (Optional) PEM encoded RSA private key used to verify service account tokens. Optional if `pki_yaml` top field is set.
 
 * `etcd_ca_certificate` - (Optional) PEM encoded X.509 CA certificate used to verify authority of etcd servers. Optional if `pki_yaml` top field is set.
 
