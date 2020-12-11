@@ -13,6 +13,8 @@ import (
 )
 
 func TestHostConfiguredContainerMarshal(t *testing.T) { //nolint:funlen
+	t.Parallel()
+
 	c := container.HostConfiguredContainer{
 		Container: container.Container{
 			Config: types.ContainerConfig{},
@@ -128,6 +130,8 @@ func hostConfiguredContainerMarshaled() []interface{} {
 }
 
 func TestHostConfiguredContainerUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := container.HostConfiguredContainer{
 		Container: container.Container{
 			Config: types.ContainerConfig{},

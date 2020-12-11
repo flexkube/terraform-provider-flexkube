@@ -9,6 +9,8 @@ import (
 )
 
 func TestClientUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := &client.Config{
 		Server: "foo",
 		Token:  "bar",
@@ -27,6 +29,8 @@ func TestClientUnmarshal(t *testing.T) {
 }
 
 func TestClientUnmarshalEmpty(t *testing.T) {
+	t.Parallel()
+
 	var c *client.Config
 	if diff := cmp.Diff(clientUnmarshal(nil), c); diff != "" {
 		t.Errorf("Unexpected diff:\n%s", diff)
@@ -34,6 +38,8 @@ func TestClientUnmarshalEmpty(t *testing.T) {
 }
 
 func TestClientUnmarshalEmptyBock(t *testing.T) {
+	t.Parallel()
+
 	var c *client.Config
 
 	if diff := cmp.Diff(clientUnmarshal(map[string]interface{}{}), c); diff != "" {

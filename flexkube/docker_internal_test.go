@@ -9,6 +9,8 @@ import (
 )
 
 func TestDockerMarshal(t *testing.T) {
+	t.Parallel()
+
 	c := docker.Config{
 		Host: "unix:///run/docker.sock",
 	}
@@ -25,6 +27,8 @@ func TestDockerMarshal(t *testing.T) {
 }
 
 func TestDockerUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := &docker.Config{
 		Host: "unix:///run/docker.sock",
 	}
@@ -41,12 +45,16 @@ func TestDockerUnmarshal(t *testing.T) {
 }
 
 func TestDockerUnmarshalEmpty(t *testing.T) {
+	t.Parallel()
+
 	if diff := cmp.Diff(dockerUnmarshal(nil), docker.DefaultConfig()); diff != "" {
 		t.Errorf("Unexpected diff:\n%s", diff)
 	}
 }
 
 func TestDockerUnmarshalEmptyBock(t *testing.T) {
+	t.Parallel()
+
 	if diff := cmp.Diff(dockerUnmarshal(map[string]interface{}{}), docker.DefaultConfig()); diff != "" {
 		t.Errorf("Unexpected diff:\n%s", diff)
 	}

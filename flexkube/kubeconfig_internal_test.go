@@ -10,6 +10,8 @@ import (
 )
 
 func TestKubeconfigUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := client.Config{
 		Server:            "127.0.0.1",
 		CACertificate:     types.Certificate("foo"),
@@ -32,6 +34,8 @@ func TestKubeconfigUnmarshal(t *testing.T) {
 }
 
 func TestKubeconfigUnmarshalEmpty(t *testing.T) {
+	t.Parallel()
+
 	var c client.Config
 
 	if diff := cmp.Diff(kubeconfigUnmarshal(nil), c); diff != "" {
@@ -40,6 +44,8 @@ func TestKubeconfigUnmarshalEmpty(t *testing.T) {
 }
 
 func TestKubeconfigUnmarshalEmptyBock(t *testing.T) {
+	t.Parallel()
+
 	var c client.Config
 
 	if diff := cmp.Diff(kubeconfigUnmarshal(map[string]interface{}{}), c); diff != "" {

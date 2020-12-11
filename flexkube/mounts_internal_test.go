@@ -9,6 +9,8 @@ import (
 )
 
 func TestMountsMarshal(t *testing.T) {
+	t.Parallel()
+
 	c := []types.Mount{
 		{
 			Source:      "/foo",
@@ -31,6 +33,8 @@ func TestMountsMarshal(t *testing.T) {
 }
 
 func TestMountsUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := []types.Mount{
 		{
 			Source:      "/foo",

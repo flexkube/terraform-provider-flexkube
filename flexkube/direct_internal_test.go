@@ -9,6 +9,8 @@ import (
 )
 
 func TestDirectMarshal(t *testing.T) {
+	t.Parallel()
+
 	c := direct.Config{}
 
 	e := []interface{}{
@@ -21,6 +23,8 @@ func TestDirectMarshal(t *testing.T) {
 }
 
 func TestDirectUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := &direct.Config{}
 
 	e := []interface{}{

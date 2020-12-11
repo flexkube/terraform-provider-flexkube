@@ -11,6 +11,8 @@ import (
 )
 
 func TestContainerMarshal(t *testing.T) {
+	t.Parallel()
+
 	c := container.Container{
 		Config: types.ContainerConfig{},
 		Runtime: container.RuntimeConfig{
@@ -57,6 +59,8 @@ func TestContainerMarshal(t *testing.T) {
 }
 
 func TestContainerMarshalWithStatus(t *testing.T) {
+	t.Parallel()
+
 	c := container.Container{
 		Config: types.ContainerConfig{},
 		Runtime: container.RuntimeConfig{
@@ -113,6 +117,8 @@ func TestContainerMarshalWithStatus(t *testing.T) {
 }
 
 func TestContainerUnmarshal(t *testing.T) {
+	t.Parallel()
+
 	c := container.Container{
 		Config: types.ContainerConfig{},
 		Runtime: container.RuntimeConfig{
