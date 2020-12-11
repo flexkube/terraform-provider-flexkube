@@ -54,7 +54,7 @@ EOF
   kube_apiserver_values = templatefile("./templates/kube-apiserver-values.yaml.tmpl", {
     server_key                     = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].server_certificate[0].private_key
     server_certificate             = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].server_certificate[0].x509_certificate
-    service_account_public_key     = flexkube_pki.pki.state_sensitive[0].kubernetes[0].service_account_certificate[0].public_key
+    service_account_private_key    = flexkube_pki.pki.state_sensitive[0].kubernetes[0].service_account_certificate[0].private_key
     ca_certificate                 = flexkube_pki.pki.state_sensitive[0].kubernetes[0].ca[0].x509_certificate
     front_proxy_client_key         = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].front_proxy_client_certificate[0].private_key
     front_proxy_client_certificate = flexkube_pki.pki.state_sensitive[0].kubernetes[0].kube_api_server[0].front_proxy_client_certificate[0].x509_certificate

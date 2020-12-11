@@ -78,8 +78,8 @@ func TestResourceDeleteRuntimeFail(t *testing.T) {
 	dn := r.Data(d.State())
 
 	// Finally, try to call Delete.
-	if err := r.DeleteContext(context.TODO(), dn, nil); err == nil {
-		t.Fatalf("destroying should fail with unreachable runtime")
+	if err := r.DeleteContext(context.TODO(), dn, nil); err != nil {
+		t.Fatalf("destroying should work with unreachable runtime: %v", err)
 	}
 }
 
@@ -172,8 +172,8 @@ func TestNewResourceFailRefresh(t *testing.T) {
 		},
 	}
 
-	if _, err := newResource(cc, true); err == nil {
-		t.Fatalf("should check for errors when checking current state")
+	if _, err := newResource(cc, true); err != nil {
+		t.Fatalf("should not return any errors: %v", err)
 	}
 }
 
