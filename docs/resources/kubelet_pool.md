@@ -93,6 +93,8 @@ resource "flexkube_kubelet_pool" "workers" {
 
 * `extra_mount` - (Optional) A `mount` block as defined below. Can be specified zero or more times. Each block represents extra mount to be added to all kubelet containers managed by this pool.
 
+* `extra_args` - (Optional) A list of extra arguments to pass to kubelet container.
+
 ---
 
 A `client` block supports the following:
@@ -148,6 +150,8 @@ A `kubelet` block supports the following:
 * `wait_for_node_ready` - (Optional) If set to `true`, resource will wait for Node object to become ready in the cluster before proceeding. Defaults to `false`.
 
 * `extra_mount` - (Optional) A `mount` block as defined below. Can be specified zero or more times. Each block represents extra mount to be added to all kubelet containers managed by this pool.
+
+* `extra_args` - (Optional) A list of extra arguments to pass to kubelet container.
 
 ---
 

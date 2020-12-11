@@ -54,6 +54,7 @@ func resourceKubeletPool() *schema.Resource {
 			"extra_mount":         mountsSchema(false),
 			"pki_yaml":            sensitiveString(false),
 			"wait_for_node_ready": optionalBool(false),
+			"extra_args":          optionalStringList(false),
 		}),
 	}
 }
@@ -76,6 +77,7 @@ func kubeletPoolUnmarshal(d getter, includeState bool) types.ResourceConfig {
 		ExtraMounts:             mountsUnmarshal(d.Get("extra_mount")),
 		PKI:                     unmarshalPKI(d),
 		WaitForNodeReady:        d.Get("wait_for_node_ready").(bool),
+		ExtraArgs:               stringListUnmarshal(d.Get("extra_args")),
 	}
 
 	if s := getState(d); includeState && s != nil {
