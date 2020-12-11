@@ -285,8 +285,8 @@ resource "flexkube_helm_release" "tls-bootstrapping" {
 resource "flexkube_helm_release" "coredns" {
   kubeconfig = local.kubeconfig_admin
   namespace  = "kube-system"
-  chart      = "stable/coredns"
-  version    = var.coredns_chart_version
+  chart      = var.coredns_helm_chart_source
+  version    = var.coredns_helm_chart_version
   name       = "coredns"
   values     = local.coredns_values
   wait       = true
@@ -300,8 +300,8 @@ resource "flexkube_helm_release" "coredns" {
 resource "flexkube_helm_release" "metrics-server" {
   kubeconfig = local.kubeconfig_admin
   namespace  = "kube-system"
-  chart      = "stable/metrics-server"
-  version    = var.metrics_server_chart_version
+  chart      = var.metrics_server_helm_chart_source
+  version    = var.metrics_server_helm_chart_version
   name       = "metrics-server"
   values     = local.metrics_server_values
   wait       = true

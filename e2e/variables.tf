@@ -50,36 +50,44 @@ variable "calico_helm_chart_source" {
   default = "flexkube/calico"
 }
 
+variable "coredns_helm_chart_source" {
+  default = "flexkube/coredns"
+}
+
+variable "metrics_server_helm_chart_source" {
+  default = "flexkube/metrics-server"
+}
+
 variable "kube_apiserver_helm_chart_version" {
-  default = "0.2.0"
+  default = "0.3.1"
 }
 
 variable "kubernetes_helm_chart_version" {
-  default = "0.3.2"
+  default = "0.4.1"
 }
 
 variable "kube_proxy_helm_chart_version" {
-  default = "0.2.3"
+  default = "0.3.1"
 }
 
 variable "tls_bootstrapping_helm_chart_version" {
   default = "0.1.1"
 }
 
-variable "coredns_chart_version" {
-  default = "1.13.3"
+variable "coredns_helm_chart_version" {
+  default = "2.0.0"
 }
 
-variable "metrics_server_chart_version" {
-  default = "2.11.1"
+variable "metrics_server_helm_chart_version" {
+  default = "3.0.2"
 }
 
 variable "kubelet_rubber_stamp_helm_chart_version" {
-  default = "0.1.4"
+  default = "0.1.6"
 }
 
 variable "calico_helm_chart_version" {
-  default = "0.2.4"
+  default = "0.4.2"
 }
 
 variable "flatcar_channel" {
