@@ -162,7 +162,7 @@ vagrant-e2e-build:
 
 .PHONY: vagrant-e2e-kubeconfig
 vagrant-e2e-kubeconfig:
-	scp -P 2222 -i ~/.vagrant.d/insecure_private_key core@127.0.0.1:/home/core/terraform-provider-flexkube/e2e/kubeconfig ./e2e/kubeconfig
+	scp -P 2222 -o StrictHostKeyChecking=no -i ~/.vagrant.d/insecure_private_key core@127.0.0.1:/home/core/terraform-provider-flexkube/e2e/kubeconfig ./e2e/kubeconfig
 
 .PHONY: vagrant-build-bin
 vagrant-build-bin: vagrant-integration-build
