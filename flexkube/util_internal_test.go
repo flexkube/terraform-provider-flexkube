@@ -63,7 +63,7 @@ func TestResourceDeleteRuntimeFail(t *testing.T) {
 		},
 	}
 
-	// Create raw configuration to crate ResourceData object.
+	// Create raw configuration to create ResourceData object.
 	raw := map[string]interface{}{
 		stateSensitiveSchemaKey: containersStateMarshal(s, false),
 	}
