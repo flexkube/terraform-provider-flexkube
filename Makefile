@@ -28,15 +28,15 @@ FLATCAR_CHANNEL=$(shell (grep FLATCAR_CHANNEL .env 2>/dev/null || echo "stable")
 TERRAFORM_ENV=TF_VAR_flatcar_channel=$(FLATCAR_CHANNEL) TF_VAR_controllers_count=$(CONTROLLERS) TF_VAR_workers_count=$(WORKERS) TF_VAR_nodes_cidr=$(NODES_CIDR)
 TERRAFORM_BIN=$(TERRAFORM_ENV) /usr/bin/terraform
 
-E2E_IMAGE=flexkube/libflexkube-e2e
+E2E_IMAGE=flexkube/terraform-provider-flexkube-e2e
 
-E2E_CMD=docker run -it --rm -v /home/core/libflexkube:/root/libflexkube -v /home/core/.ssh:/root/.ssh -v /home/core/.terraform.d:/root/.terraform.d -w /root/libflexkube --net host --entrypoint /bin/bash -e TF_VAR_flatcar_channel=$(FLATCAR_CHANNEL) -e TF_VAR_controllers_count=$(CONTROLLERS) -e TF_VAR_workers_count=$(WORKERS) -e TF_VAR_nodes_cidr=$(NODES_CIDR) $(E2E_IMAGE)
+E2E_CMD=docker run -it --rm -v /home/core/terraform-provider-flexkube:/root/terraform-provider-flexkube -v /home/core/.ssh:/root/.ssh -v /home/core/.terraform.d:/root/.terraform.d -w /root/terraform-provider-flexkube --net host --entrypoint /bin/bash -e TF_VAR_flatcar_channel=$(FLATCAR_CHANNEL) -e TF_VAR_controllers_count=$(CONTROLLERS) -e TF_VAR_workers_count=$(WORKERS) -e TF_VAR_nodes_cidr=$(NODES_CIDR) $(E2E_IMAGE)
 
-BUILD_CMD=docker run -it --rm -v /home/core/libflexkube:/usr/src/libflexkube -v /home/core/go:/go -v /home/core/.cache:/root/.cache -v /run:/run -w /usr/src/libflexkube $(INTEGRATION_IMAGE)
+BUILD_CMD=docker run -it --rm -v /home/core/terraform-provider-flexkube:/usr/src/terraform-provider-flexkube -v /home/core/go:/go -v /home/core/.cache:/root/.cache -v /run:/run -w /usr/src/terraform-provider-flexkube $(INTEGRATION_IMAGE)
 
-INTEGRATION_IMAGE=flexkube/libflexkube-integration
+INTEGRATION_IMAGE=flexkube/terraform-provider-flexkube-integration
 
-INTEGRATION_CMD=docker run -it --rm -v /run:/run -v /home/core/libflexkube:/usr/src/libflexkube -v /home/core/go:/go -v /home/core/.password:/home/core/.password -v /home/core/.ssh:/home/core/.ssh -v /home/core/.cache:/root/.cache -w /usr/src/libflexkube --net host $(INTEGRATION_IMAGE)
+INTEGRATION_CMD=docker run -it --rm -v /run:/run -v /home/core/terraform-provider-flexkube:/usr/src/terraform-provider-flexkube -v /home/core/go:/go -v /home/core/.password:/home/core/.password -v /home/core/.ssh:/home/core/.ssh -v /home/core/.cache:/root/.cache -w /usr/src/terraform-provider-flexkube --net host $(INTEGRATION_IMAGE)
 
 VAGRANTCMD=$(TERRAFORM_ENV) vagrant
 
@@ -162,7 +162,7 @@ vagrant-e2e-build:
 
 .PHONY: vagrant-e2e-kubeconfig
 vagrant-e2e-kubeconfig:
-	scp -P 2222 -i ~/.vagrant.d/insecure_private_key core@127.0.0.1:/home/core/libflexkube/e2e/kubeconfig ./e2e/kubeconfig
+	scp -P 2222 -i ~/.vagrant.d/insecure_private_key core@127.0.0.1:/home/core/terraform-provider-flexkube/e2e/kubeconfig ./e2e/kubeconfig
 
 .PHONY: vagrant-build-bin
 vagrant-build-bin: vagrant-integration-build
@@ -186,7 +186,7 @@ vagrant-e2e: vagrant-e2e-run vagrant-e2e-destroy vagrant-destroy
 
 .PHONY: vagrant-integration-build
 vagrant-integration-build:
-	$(VAGRANTCMD) ssh -c "docker build -t $(INTEGRATION_IMAGE) libflexkube/integration"
+	$(VAGRANTCMD) ssh -c "docker build -t $(INTEGRATION_IMAGE) terraform-provider-flexkube/integration"
 
 .PHONY: vagrant-integration-run
 vagrant-integration-run:
@@ -205,6 +205,6 @@ test-e2e-run: TERRAFORM_BIN=$(TERRAFORM_ENV) /bin/terraform
 test-e2e-run:
 	helm repo update
 	mkdir -p /root/.local/share/terraform/plugins/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/ /root/.terraform.d/plugin-cache/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
-	cp /root/libflexkube/terraform-provider-flexkube /root/.terraform.d/plugin-cache/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
-	cp /root/libflexkube/terraform-provider-flexkube /root/.local/share/terraform/plugins/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
+	cp /root/terraform-provider-flexkube/terraform-provider-flexkube /root/.terraform.d/plugin-cache/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
+	cp /root/terraform-provider-flexkube/terraform-provider-flexkube /root/.local/share/terraform/plugins/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
 	cd e2e && $(TERRAFORM_BIN) init && $(TERRAFORM_BIN) apply -auto-approve

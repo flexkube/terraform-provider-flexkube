@@ -21,4 +21,4 @@ RUN helm repo add stable https://kubernetes-charts.storage.googleapis.com
 
 RUN helm repo add flexkube https://flexkube.github.io/charts/
 
-ENV KUBECONFIG=/root/libflexkube/e2e/kubeconfig
+ENV KUBECONFIG=/root/terraform-provider-flexkube/e2e/kubeconfig
