@@ -62,7 +62,7 @@ func controlplaneDiff(c context.Context, d *schema.ResourceDiff, m interface{}) 
 	return resourceDiff(controlplaneUnmarshal)(c, d, m)
 }
 
-func controlplaneUnmarshal(d getter, includeState bool) types.ResourceConfig {
+func controlplaneUnmarshal(d getter, includeState bool) types.ResourceConfig { //nolint:cyclop
 	c := &controlplane.Controlplane{
 		APIServerAddress: d.Get("api_server_address").(string),
 		APIServerPort:    d.Get("api_server_port").(int),

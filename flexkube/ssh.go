@@ -31,7 +31,7 @@ func sshMarshal(c ssh.Config, sensitive bool) interface{} {
 	}
 }
 
-func sshUnmarshal(i interface{}) *ssh.Config {
+func sshUnmarshal(i interface{}) *ssh.Config { //nolint:cyclop
 	// If block is not defined, don't return anything.
 	if i == nil {
 		return nil

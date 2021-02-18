@@ -13,11 +13,7 @@ GOBUILD=CGO_ENABLED=$(CGO_ENABLED) $(GOCMD) build -v -buildmode=exe -ldflags $(L
 GO_PACKAGES=./...
 GO_TESTS=^.*$
 
-GOLANGCI_LINT_VERSION=v1.33.0
-# gci              - As we use formatting rules from different linter and they are conflicting.
-# goerr113         - Disabled until we implement some error types and migrate to use them.
-# exhaustivestruct - To be able to make use of Go zero-value feature.
-DISABLED_LINTERS=gci,goerr113,exhaustivestruct
+GOLANGCI_LINT_VERSION=v1.37.0
 
 BIN_PATH=$$HOME/bin
 
@@ -28,17 +24,21 @@ FLATCAR_CHANNEL=$(shell (grep FLATCAR_CHANNEL .env 2>/dev/null || echo "stable")
 TERRAFORM_ENV=TF_VAR_flatcar_channel=$(FLATCAR_CHANNEL) TF_VAR_controllers_count=$(CONTROLLERS) TF_VAR_workers_count=$(WORKERS) TF_VAR_nodes_cidr=$(NODES_CIDR)
 TERRAFORM_BIN=$(TERRAFORM_ENV) /usr/bin/terraform
 
-E2E_IMAGE=flexkube/libflexkube-e2e
+E2E_IMAGE=flexkube/terraform-provider-flexkube-e2e
 
-E2E_CMD=docker run -it --rm -v /home/core/libflexkube:/root/libflexkube -v /home/core/.ssh:/root/.ssh -v /home/core/.terraform.d:/root/.terraform.d -w /root/libflexkube --net host --entrypoint /bin/bash -e TF_VAR_flatcar_channel=$(FLATCAR_CHANNEL) -e TF_VAR_controllers_count=$(CONTROLLERS) -e TF_VAR_workers_count=$(WORKERS) -e TF_VAR_nodes_cidr=$(NODES_CIDR) $(E2E_IMAGE)
+E2E_CMD=docker run -it --rm -v /home/core/terraform-provider-flexkube:/root/terraform-provider-flexkube -v /home/core/.ssh:/root/.ssh -v /home/core/.terraform.d:/root/.terraform.d -w /root/terraform-provider-flexkube --net host --entrypoint /bin/bash -e TF_VAR_flatcar_channel=$(FLATCAR_CHANNEL) -e TF_VAR_controllers_count=$(CONTROLLERS) -e TF_VAR_workers_count=$(WORKERS) -e TF_VAR_nodes_cidr=$(NODES_CIDR) $(E2E_IMAGE)
 
-BUILD_CMD=docker run -it --rm -v /home/core/libflexkube:/usr/src/libflexkube -v /home/core/go:/go -v /home/core/.cache:/root/.cache -v /run:/run -w /usr/src/libflexkube $(INTEGRATION_IMAGE)
+BUILD_CMD=docker run -it --rm -v /home/core/terraform-provider-flexkube:/usr/src/terraform-provider-flexkube -v /home/core/go:/go -v /home/core/.cache:/root/.cache -v /run:/run -w /usr/src/terraform-provider-flexkube $(INTEGRATION_IMAGE)
 
-INTEGRATION_IMAGE=flexkube/libflexkube-integration
+INTEGRATION_IMAGE=flexkube/terraform-provider-flexkube-integration
 
-INTEGRATION_CMD=docker run -it --rm -v /run:/run -v /home/core/libflexkube:/usr/src/libflexkube -v /home/core/go:/go -v /home/core/.password:/home/core/.password -v /home/core/.ssh:/home/core/.ssh -v /home/core/.cache:/root/.cache -w /usr/src/libflexkube --net host $(INTEGRATION_IMAGE)
+INTEGRATION_CMD=docker run -it --rm -v /run:/run -v /home/core/terraform-provider-flexkube:/usr/src/terraform-provider-flexkube -v /home/core/go:/go -v /home/core/.password:/home/core/.password -v /home/core/.ssh:/home/core/.ssh -v /home/core/.cache:/root/.cache -w /usr/src/terraform-provider-flexkube --net host $(INTEGRATION_IMAGE)
 
 VAGRANTCMD=$(TERRAFORM_ENV) vagrant
+
+COVERPROFILE=c.out
+
+CC_TEST_REPORTER_ID=5bc3e58aca2ff47897d533ba92ae8db15ac9fdb83fad3637301ee5d75ccd4143
 
 .PHONY: all
 all: build build-test test lint
@@ -69,7 +69,7 @@ test: build-test
 
 .PHONY: lint
 lint:
-	golangci-lint run --enable-all --disable=$(DISABLED_LINTERS) --max-same-issues=0 --max-issues-per-linter=0 --build-tags integration --timeout 10m --exclude-use-default=false $(GO_PACKAGES)
+	golangci-lint run $(GO_PACKAGES)
 
 .PHONY: build-test
 build-test:
@@ -86,33 +86,46 @@ update:
 	$(GOGET) -u $(GO_PACKAGES)
 	$(GOMOD) tidy
 
+.PHONY: update-linters
+update-linters:
+	# Remove all enabled linters.
+	sed -i '/^  enable:/q0' .golangci.yml
+	# Then add all possible linters to config.
+	golangci-lint linters | grep -E '^\S+:' | cut -d: -f1 | sort | sed 's/^/    - /g' | grep -v -E "($$(grep '^  disable:' -A 100 .golangci.yml  | grep -E '    - \S+$$' | awk '{print $$2}' | tr \\n '|' | sed 's/|$$//g'))" >> .golangci.yml
+
+.PHONY: test-update-linters
+test-update-linters:
+	@test -z "$$(git status --porcelain)" || (echo "Working directory must be clean to perform this check."; exit 1)
+	make update-linters
+	@test -z "$$(git status --porcelain)" || (echo "Linter configuration outdated. Run 'make update-linters' and commit generated changes to fix."; exit 1)
+
 .PHONY: all-cover
 all-cover: build build-test test-cover lint
 
 .PHONY: test-cover
 test-cover: build-test
-	$(GOTEST) -run $(GO_TESTS) -coverprofile=$(PROFILEFILE) $(GO_PACKAGES)
+	$(GOTEST) -run $(GO_TESTS) -coverprofile=$(COVERPROFILE) $(GO_PACKAGES)
 
 .PHONY: cover-browse
 cover-browse:
-	go tool cover -html=$(PROFILEFILE)
+	go tool cover -html=$(COVERPROFILE)
 
 .PHONY: test-cover-browse
-test-cover-browse: PROFILEFILE=c.out
 test-cover-browse: test-cover cover-browse
 
-.PHONY: cover-upload
-cover-upload: codecov
-	# Make codeclimate as command, as we need to run test-cover twice and make deduplicates that.
-	# Go test results are cached anyway, so it's fine to run it multiple times.
-	make codeclimate
+.PHONY: test-cover-upload-codecov
+test-cover-upload-codecov: SHELL=/bin/bash
+test-cover-upload-codecov: test-cover
+test-cover-upload-codecov:
+	bash <(curl -s https://codecov.io/bash) -f $(COVERPROFILE)
 
-.PHONY: codecov
-codecov: PROFILEFILE=coverage.txt
-codecov: SHELL=/bin/bash
-codecov: test-cover
-codecov:
-	bash <(curl -s https://codecov.io/bash)
+.PHONY: test-cover-upload-codeclimate
+test-cover-upload-codeclimate: test-cover
+test-cover-upload-codeclimate:
+	env CC_TEST_REPORTER_ID=$(CC_TEST_REPORTER_ID) cc-test-reporter after-build -t gocov -p $$(go list -m)
+
+.PHONY: test-cover-upload
+test-cover-upload: test-cover-upload-codecov test-cover-upload-codeclimate
 
 .PHONY: libvirt-apply
 libvirt-apply: libvirt-download-image
@@ -162,7 +175,7 @@ vagrant-e2e-build:
 
 .PHONY: vagrant-e2e-kubeconfig
 vagrant-e2e-kubeconfig:
-	scp -P 2222 -i ~/.vagrant.d/insecure_private_key core@127.0.0.1:/home/core/libflexkube/e2e/kubeconfig ./e2e/kubeconfig
+	scp -P 2222 -o StrictHostKeyChecking=no -i ~/.vagrant.d/insecure_private_key core@127.0.0.1:/home/core/terraform-provider-flexkube/e2e/kubeconfig ./e2e/kubeconfig
 
 .PHONY: vagrant-build-bin
 vagrant-build-bin: vagrant-integration-build
@@ -186,11 +199,7 @@ vagrant-e2e: vagrant-e2e-run vagrant-e2e-destroy vagrant-destroy
 
 .PHONY: vagrant-integration-build
 vagrant-integration-build:
-	$(VAGRANTCMD) ssh -c "docker build -t $(INTEGRATION_IMAGE) libflexkube/integration"
-
-.PHONY: vagrant-integration-run
-vagrant-integration-run:
-	$(VAGRANTCMD) ssh -c "$(INTEGRATION_CMD) make test-integration GO_PACKAGES=$(GO_PACKAGES)"
+	$(VAGRANTCMD) ssh -c "docker build -t $(INTEGRATION_IMAGE) terraform-provider-flexkube/integration"
 
 .PHONY: vagrant-integration-shell
 vagrant-integration-shell:
@@ -205,6 +214,6 @@ test-e2e-run: TERRAFORM_BIN=$(TERRAFORM_ENV) /bin/terraform
 test-e2e-run:
 	helm repo update
 	mkdir -p /root/.local/share/terraform/plugins/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/ /root/.terraform.d/plugin-cache/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
-	cp /root/libflexkube/terraform-provider-flexkube /root/.terraform.d/plugin-cache/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
-	cp /root/libflexkube/terraform-provider-flexkube /root/.local/share/terraform/plugins/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
+	cp /root/terraform-provider-flexkube/terraform-provider-flexkube /root/.terraform.d/plugin-cache/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
+	cp /root/terraform-provider-flexkube/terraform-provider-flexkube /root/.local/share/terraform/plugins/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
 	cd e2e && $(TERRAFORM_BIN) init && $(TERRAFORM_BIN) apply -auto-approve
