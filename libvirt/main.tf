@@ -7,7 +7,7 @@ variable "core_public_keys" {
 }
 
 resource "libvirt_pool" "pool" {
-  name = "libflexkube"
+  name = "flexkube"
   type = "dir"
   path = "${abspath(path.module)}/pool"
 }
