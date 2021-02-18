@@ -1,0 +1,5 @@
+issues:
+  exclude-rules:
+    - linters:
+      - forbidigo
+      text: "use of `fmt.Printf` forbidden by pattern"
