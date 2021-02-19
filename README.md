@@ -23,6 +23,8 @@ This project use `goreleaser` for releasing. To release new version, follow the 
 
 * Add a changelog for new release to CHANGELOG.md file.
 
+* Update `docs/index.md` file to update recommended version in the example.
+
 * Tag new release on desired git commit, using example command:
 
   ```sh
