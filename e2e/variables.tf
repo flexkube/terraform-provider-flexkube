@@ -59,15 +59,15 @@ variable "metrics_server_helm_chart_source" {
 }
 
 variable "kube_apiserver_helm_chart_version" {
-  default = "0.3.3"
+  default = "0.3.4"
 }
 
 variable "kubernetes_helm_chart_version" {
-  default = "0.4.3"
+  default = "0.4.4"
 }
 
 variable "kube_proxy_helm_chart_version" {
-  default = "0.3.3"
+  default = "0.3.4"
 }
 
 variable "tls_bootstrapping_helm_chart_version" {
@@ -87,7 +87,7 @@ variable "kubelet_rubber_stamp_helm_chart_version" {
 }
 
 variable "calico_helm_chart_version" {
-  default = "0.4.3"
+  default = "0.4.4"
 }
 
 variable "flatcar_channel" {
