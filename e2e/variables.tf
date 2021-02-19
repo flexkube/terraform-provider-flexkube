@@ -91,5 +91,5 @@ variable "calico_helm_chart_version" {
 }
 
 variable "flatcar_channel" {
-  default = "edge"
+  default = "stable"
 }
