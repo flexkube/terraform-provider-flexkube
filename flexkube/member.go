@@ -6,15 +6,15 @@ import (
 	"github.com/flexkube/libflexkube/pkg/etcd"
 )
 
-func membersUnmarshal(i interface{}) map[string]etcd.Member {
+func membersUnmarshal(i interface{}) map[string]etcd.MemberConfig {
 	j := i.([]interface{})
 
-	members := map[string]etcd.Member{}
+	members := map[string]etcd.MemberConfig{}
 
 	for _, k := range j {
 		t := k.(map[string]interface{})
 
-		m := etcd.Member{
+		m := etcd.MemberConfig{
 			Name:              t["name"].(string),
 			Image:             t["image"].(string),
 			CACertificate:     t["ca_certificate"].(string),
