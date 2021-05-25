@@ -91,7 +91,12 @@ func getRelease(d *schema.ResourceData, m interface{}) (release.Release, error) 
 	l.helmClientLock.Lock()
 	defer l.helmClientLock.Unlock()
 
-	return r.New()
+	rel, err := r.New()
+	if err != nil {
+		return nil, fmt.Errorf("creating new release: %w", err)
+	}
+
+	return rel, nil
 }
 
 func getReleaseID(d *schema.ResourceData) string {
