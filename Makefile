@@ -217,3 +217,8 @@ test-e2e-run:
 	cp /root/terraform-provider-flexkube/terraform-provider-flexkube /root/.terraform.d/plugin-cache/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
 	cp /root/terraform-provider-flexkube/terraform-provider-flexkube /root/.local/share/terraform/plugins/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
 	cd e2e && $(TERRAFORM_BIN) init && $(TERRAFORM_BIN) apply -auto-approve
+
+.PHONY: test-e2e-destroy
+test-e2e-destroy: TERRAFORM_BIN=$(TERRAFORM_ENV) /bin/terraform
+test-e2e-destroy:
+	$(TERRAFORM_BIN) -chdir=e2e destroy -auto-approve
