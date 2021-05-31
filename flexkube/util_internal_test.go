@@ -2,6 +2,7 @@ package flexkube
 
 import (
 	"context"
+	"os"
 	"strings"
 	"testing"
 
@@ -17,18 +18,24 @@ import (
 	"github.com/flexkube/libflexkube/pkg/host/transport/direct"
 )
 
-// saveState() tests.
-func TestSaveStateBadScheme(t *testing.T) {
-	t.Parallel()
+const (
+	tfACC = "TF_ACC"
+)
 
+// saveState() tests.
+//
+// nolint:paralleltest // This function modifies environment variables, which are global.
+func TestSaveStateBadScheme(t *testing.T) {
 	r := resourceContainers()
 	delete(r.Schema, stateYAMLSchemaKey)
 
-	d := r.Data(&terraform.InstanceState{})
+	withoutAcceptanceEnvVar(t, func(t *testing.T) { //nolint:thelper
+		d := r.Data(&terraform.InstanceState{})
 
-	if err := saveState(d, container.ContainersState{}, containersUnmarshal, nil); err == nil {
-		t.Fatalf("save state should fail when called on bad scheme")
-	}
+		if err := saveState(d, container.ContainersState{}, containersUnmarshal, nil); err == nil {
+			t.Fatalf("save state should fail when called on bad scheme")
+		}
+	})
 }
 
 // resourceDelete() tests.
@@ -132,15 +139,16 @@ func TestResourceDeleteEmptyState(t *testing.T) {
 	}
 }
 
+//nolint:paralleltest // This function modifies environment variables, which are global.
 func TestResourceDeleteBadKey(t *testing.T) {
-	t.Parallel()
-
 	r := resourceContainers()
 	r.DeleteContext = resourceDelete(containersUnmarshal, "foo")
 
-	if err := r.DeleteContext(context.TODO(), r.Data(&terraform.InstanceState{}), nil); err == nil {
-		t.Fatalf("emptying key not existing in scheme should fail")
-	}
+	withoutAcceptanceEnvVar(t, func(t *testing.T) { //nolint:thelper
+		if err := r.DeleteContext(context.TODO(), r.Data(&terraform.InstanceState{}), nil); err == nil {
+			t.Fatalf("emptying key not existing in scheme should fail")
+		}
+	})
 }
 
 // newResource() tests.
@@ -386,5 +394,21 @@ func TestStringMapUnmarshalEmpty(t *testing.T) {
 
 	if diff := cmp.Diff(stringMapUnmarshal(nil), e); diff != "" {
 		t.Fatalf("Unexpected diff: %s", diff)
+	}
+}
+
+func withoutAcceptanceEnvVar(t *testing.T, testF func(t *testing.T)) {
+	t.Helper()
+
+	v := os.Getenv(tfACC)
+
+	if err := os.Unsetenv(tfACC); err != nil {
+		t.Fatalf("Unsetting %q environment variable: %v", tfACC, err)
+	}
+
+	testF(t)
+
+	if err := os.Setenv(tfACC, v); err != nil {
+		t.Fatalf("Setting back %q environment variable: %v", tfACC, err)
 	}
 }

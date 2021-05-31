@@ -24,6 +24,15 @@ linters:
     - gci
     # To be able to make use of Go zero-value feature.
     - exhaustivestruct
+    # Allow replacements to force specific versions of dependencies.
+    - gomoddirectives
+    # Temporarily disable assertion checks, as it adds a lot of boilerplate to the code.
+    - forcetypeassert
+    # Those linters has been deprecated.
+    - interfacer
+    - maligned
+    - scopelint
+    - golint
   enable:
     - asciicheck
     - bodyclose
@@ -51,31 +60,31 @@ linters:
     - gofumpt
     - goheader
     - goimports
-    - golint
     - gomnd
     - gomodguard
     - goprintffuncname
     - ifshort
+    - importas
     - ineffassign
-    - interfacer
     - lll
     - makezero
-    - maligned
     - misspell
     - nakedret
     - nestif
+    - nilerr
     - nlreturn
     - noctx
     - nolintlint
     - paralleltest
     - prealloc
     - predeclared
+    - promlinter
     - revive
     - rowserrcheck
-    - scopelint
     - sqlclosecheck
     - structcheck
     - stylecheck
+    - tagliatelle
     - testpackage
     - thelper
     - tparallel
@@ -83,6 +92,7 @@ linters:
     - unconvert
     - unparam
     - varcheck
+    - wastedassign
     - whitespace
     - wrapcheck
     - wsl

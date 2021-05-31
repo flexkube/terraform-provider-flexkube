@@ -336,7 +336,7 @@ resource "flexkube_controlplane" "bootstrap" {}
 		Steps: []resource.TestStep{
 			{
 				Config:      config,
-				ExpectError: regexp.MustCompile(`Required attribute is not set`),
+				ExpectError: regexp.MustCompile(`blocks are required.`),
 			},
 		},
 	})
@@ -361,7 +361,7 @@ resource "flexkube_controlplane" "bootstrap" {
 		Steps: []resource.TestStep{
 			{
 				Config:      config,
-				ExpectError: regexp.MustCompile(`Required attribute is not set`),
+				ExpectError: regexp.MustCompile(`blocks are required.`),
 			},
 		},
 	})

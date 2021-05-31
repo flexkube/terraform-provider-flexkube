@@ -13,7 +13,7 @@ GOBUILD=CGO_ENABLED=$(CGO_ENABLED) $(GOCMD) build -v -buildmode=exe -ldflags $(L
 GO_PACKAGES=./...
 GO_TESTS=^.*$
 
-GOLANGCI_LINT_VERSION=v1.37.0
+GOLANGCI_LINT_VERSION=v1.40.1
 
 BIN_PATH=$$HOME/bin
 
@@ -217,3 +217,8 @@ test-e2e-run:
 	cp /root/terraform-provider-flexkube/terraform-provider-flexkube /root/.terraform.d/plugin-cache/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
 	cp /root/terraform-provider-flexkube/terraform-provider-flexkube /root/.local/share/terraform/plugins/registry.terraform.io/flexkube-testing/flexkube/0.1.0/linux_amd64/
 	cd e2e && $(TERRAFORM_BIN) init && $(TERRAFORM_BIN) apply -auto-approve
+
+.PHONY: test-e2e-destroy
+test-e2e-destroy: TERRAFORM_BIN=$(TERRAFORM_ENV) /bin/terraform
+test-e2e-destroy:
+	$(TERRAFORM_BIN) -chdir=e2e destroy -auto-approve

@@ -11,7 +11,7 @@ terraform {
   required_providers {
     flexkube = {
       source  = "flexkube/flexkube"
-      version = "0.5.0"
+      version = "0.5.1"
     }
   }
 }
