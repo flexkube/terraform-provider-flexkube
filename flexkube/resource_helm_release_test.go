@@ -58,7 +58,7 @@ func TestHelmRelease(t *testing.T) {
 			},
 			{
 				Config:      helmReleasePlanOnly,
-				ExpectError: regexp.MustCompile(`failed to create kubernetes client`),
+				ExpectError: regexp.MustCompile(`creating Kubernetes client`),
 			},
 		},
 	})
@@ -110,7 +110,7 @@ func TestHelmReleaseBadValues(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      helmReleaseBadValues,
-				ExpectError: regexp.MustCompile(`parsing field as YAM`),
+				ExpectError: regexp.MustCompile(`parsing field as YAML`),
 			},
 		},
 	})
@@ -159,7 +159,7 @@ func TestHelmReleaseBadKubeconfig(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      helmReleaseBadKubeconfig,
-				ExpectError: regexp.MustCompile(`parsing field as YAM`),
+				ExpectError: regexp.MustCompile(`parsing field as YAML`),
 			},
 		},
 	})

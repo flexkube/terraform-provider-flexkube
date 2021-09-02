@@ -286,7 +286,7 @@ func TestControlplaneValidateFail(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:      controlplaneValidateFailConfig,
-				ExpectError: regexp.MustCompile(`failed to decode PEM format`),
+				ExpectError: regexp.MustCompile(`decoding PEM format`),
 			},
 		},
 	})
@@ -316,7 +316,7 @@ resource "flexkube_controlplane" "bootstrap" {
 		Steps: []resource.TestStep{
 			{
 				Config:      config,
-				ExpectError: regexp.MustCompile(`failed initializing configuration`),
+				ExpectError: regexp.MustCompile(`initializing configuration`),
 			},
 		},
 	})
