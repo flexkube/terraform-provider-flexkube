@@ -93,3 +93,15 @@ variable "calico_helm_chart_version" {
 variable "flatcar_channel" {
   default = "stable"
 }
+
+variable "container_runtime" {
+  default = "containerd"
+}
+
+variable "cidr_ips_offset" {
+  default = 2
+}
+
+variable "kubelet_extra_args" {
+  default = []
+}
