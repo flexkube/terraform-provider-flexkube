@@ -379,30 +379,20 @@ resource "flexkube_kubelet_pool" "controller" {
     server = "${local.first_controller_ip}:${local.api_port}"
   }
 
-  taints = {
+  taints = var.workers_count > 0 ? {
     "node-role.kubernetes.io/master" = "NoSchedule"
+  } : {}
+
+  dynamic "extra_mount" {
+    for_each = local.kubelet_extra_mounts
+
+    content {
+      source = extra_mount.value.source
+      target = extra_mount.value.target
+    }
   }
 
-  extra_mount {
-    source = "/run/docker/libcontainerd/"
-    target = "/run/docker/libcontainerd"
-  }
-
-  extra_mount {
-    source = "/var/lib/containerd/"
-    target = "/var/lib/containerd"
-  }
-
-  extra_mount {
-    source = "/run/torcx/unpack/docker/bin/containerd-shim-runc-v2"
-    target = "/usr/bin/containerd-shim-runc-v2"
-  }
-
-  extra_args = [
-    "--container-runtime=remote",
-    "--container-runtime-endpoint=unix:///run/docker/libcontainerd/docker-containerd.sock",
-  ]
-
+  extra_args = local.kubelet_extra_args
 
   ssh {
     user        = "core"
@@ -494,25 +484,16 @@ resource "flexkube_kubelet_pool" "workers" {
     "cpu"    = "100m"
   }
 
-  extra_mount {
-    source = "/run/docker/libcontainerd/"
-    target = "/run/docker/libcontainerd"
+  dynamic "extra_mount" {
+    for_each = local.kubelet_extra_mounts
+
+    content {
+      source = extra_mount.value.source
+      target = extra_mount.value.target
+    }
   }
 
-  extra_mount {
-    source = "/var/lib/containerd/"
-    target = "/var/lib/containerd"
-  }
-
-  extra_mount {
-    source = "/run/torcx/unpack/docker/bin/containerd-shim-runc-v2"
-    target = "/usr/bin/containerd-shim-runc-v2"
-  }
-
-  extra_args = [
-    "--container-runtime=remote",
-    "--container-runtime-endpoint=unix:///run/docker/libcontainerd/docker-containerd.sock",
-  ]
+  extra_args = local.kubelet_extra_args
 
   ssh {
     user        = "core"

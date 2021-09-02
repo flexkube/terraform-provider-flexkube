@@ -3,7 +3,7 @@ resource "null_resource" "controllers" {
 
   triggers = {
     name = format("controller%02d", count.index + 1)
-    ip   = cidrhost(var.nodes_cidr, count.index + 2)
+    ip   = cidrhost(var.nodes_cidr, count.index + var.cidr_ips_offset)
     cidr = cidrsubnet(var.pod_cidr, 8, count.index + 2)
   }
 }
@@ -18,6 +18,22 @@ locals {
   worker_ips   = null_resource.workers.*.triggers.ip
   worker_cidrs = null_resource.workers.*.triggers.cidr
   worker_names = null_resource.workers.*.triggers.name
+
+  kubelet_extra_args = var.container_runtime == "containerd" ? concat(var.kubelet_extra_args, ["--container-runtime=remote", "--container-runtime-endpoint=unix:///run/containerd/containerd.sock"]) : var.kubelet_extra_args
+  kubelet_extra_mounts = var.container_runtime == "containerd" ? [
+    {
+      source = "/run/containerd/",
+      target = "/run/containerd",
+    },
+    {
+      source = "/var/lib/containerd/",
+      target = "/var/lib/containerd",
+    },
+    {
+      source = "/run/torcx/unpack/docker/bin/containerd-shim-runc-v2",
+      target = "/usr/bin/containerd-shim-runc-v2",
+    },
+  ] : []
 }
 
 resource "null_resource" "workers" {
@@ -25,7 +41,7 @@ resource "null_resource" "workers" {
 
   triggers = {
     name = format("worker%02d", count.index + 1)
-    ip   = cidrhost(var.nodes_cidr, count.index + 2 + 10)
+    ip   = cidrhost(var.nodes_cidr, count.index + var.cidr_ips_offset + 10)
     cidr = cidrsubnet(var.pod_cidr, 8, count.index + 2 + 10)
   }
 }

@@ -158,7 +158,7 @@ resource "flexkube_etcd_cluster" "etcd" {
 		Steps: []resource.TestStep{
 			{
 				Config:      config,
-				ExpectError: regexp.MustCompile(`failed to validate member`),
+				ExpectError: regexp.MustCompile(`validating member`),
 			},
 		},
 	})
