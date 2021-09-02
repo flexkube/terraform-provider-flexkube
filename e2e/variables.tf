@@ -75,11 +75,11 @@ variable "tls_bootstrapping_helm_chart_version" {
 }
 
 variable "coredns_helm_chart_version" {
-  default = "2.0.0"
+  default = "2.0.3"
 }
 
 variable "metrics_server_helm_chart_version" {
-  default = "3.0.2"
+  default = "3.0.5"
 }
 
 variable "kubelet_rubber_stamp_helm_chart_version" {
@@ -87,7 +87,7 @@ variable "kubelet_rubber_stamp_helm_chart_version" {
 }
 
 variable "calico_helm_chart_version" {
-  default = "0.4.4"
+  default = "0.4.10"
 }
 
 variable "flatcar_channel" {
