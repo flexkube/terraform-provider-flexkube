@@ -16,6 +16,42 @@ jobs:
       - run: make install-cc-test-reporter BIN_PATH=/usr/local/bin
       - run: make build build-test test-update-linters lint
       - run: make test-cover-upload
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.17'
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+      - name: Fetch dependencies and configure tests
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+          helm repo add flexkube https://flexkube.github.io/charts/
+
+          docker-compose -f e2e/docker-compose.yml up -d
+          until test -f e2e/keys/id_rsa; do sleep 0.5; done
+
+          sudo chown $(whoami): e2e/keys/id_rsa
+
+          cat <<EOF > e2e/variables.auto.tfvars
+            ssh_private_key_path = "$(pwd)/e2e/keys/id_rsa"
+            nodes_cidr           = "172.17.0.0/24"
+            node_ssh_port        = 2222
+            workers_count        = 0
+            container_runtime    = "docker"
+            cidr_ips_offset      = 1
+            kubelet_extra_args   = ["--fail-swap-on=false"]
+          EOF
+      - run: make build test-e2e-run TERRAFORM_BIN=terraform
   codespell:
     runs-on: ubuntu-latest
     steps:
