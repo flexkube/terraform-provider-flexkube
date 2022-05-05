@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: golangci/golangci-lint:v1.40.1
+    container: golangci/golangci-lint:v1.45.1
     steps:
       - uses: actions/checkout@v2
         with:
@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v2
         with:
-          go-version: '1.17'
+          go-version: '1.18'
       - uses: actions/cache@v2
         with:
           path: |
@@ -32,6 +32,8 @@ jobs:
             ${{ runner.os }}-go-
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
+      - name: Setup containerd
+        uses: crazy-max/ghaction-setup-containerd@v1.3.0
       - name: Fetch dependencies and configure tests
         run: |
           curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
@@ -47,9 +49,11 @@ jobs:
             nodes_cidr           = "172.17.0.0/24"
             node_ssh_port        = 2222
             workers_count        = 0
-            container_runtime    = "docker"
             cidr_ips_offset      = 1
-            kubelet_extra_args   = ["--fail-swap-on=false"]
+            kubelet_extra_args   = [
+              "--fail-swap-on=false",
+              "--container-runtime-endpoint=unix:///run/containerd/containerd.sock",
+            ]
           EOF
       - run: make build test-e2e-run TERRAFORM_BIN=terraform
   codespell:
