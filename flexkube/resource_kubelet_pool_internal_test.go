@@ -16,7 +16,6 @@ locals {
   controller_ips = ["1.1.1.1"]
   controller_names = ["controller01"]
   cgroup_driver = "systemd"
-  network_plugin = "cni"
   first_controller_ip = local.controller_ips[0]
   api_port = 6443
   node_load_balancer_address = "127.0.0.1"
@@ -56,8 +55,7 @@ resource "flexkube_kubelet_pool" "controller" {
   }
 
   cgroup_driver             = local.cgroup_driver
-  network_plugin            = local.network_plugin
-  hairpin_mode              = local.network_plugin == "kubenet" ? "promiscuous-bridge" : "hairpin-veth"
+  hairpin_mode              = "hairpin-veth"
   volume_plugin_dir         = "/var/lib/kubelet/volumeplugins"
   cluster_dns_ips = [
     "11.0.0.10"
@@ -96,9 +94,7 @@ resource "flexkube_kubelet_pool" "controller" {
     for_each = local.controller_ips
 
     content {
-      name     = local.controller_names[kubelet.key]
-      pod_cidr = local.network_plugin == "kubenet" ? local.controller_cidrs[kubelet.key] : ""
-
+      name    = local.controller_names[kubelet.key]
       address = local.controller_ips[kubelet.key]
 
       host {
@@ -141,7 +137,6 @@ locals {
   controller_ips = ["1.1.1.1"]
   controller_names = ["controller01"]
   cgroup_driver = "systemd"
-  network_plugin = "cni"
   first_controller_ip = local.controller_ips[0]
   api_port = 6443
   node_load_balancer_address = "127.0.0.1"
@@ -181,8 +176,7 @@ resource "flexkube_kubelet_pool" "controller" {
   }
 
   cgroup_driver             = local.cgroup_driver
-  network_plugin            = local.network_plugin
-  hairpin_mode              = local.network_plugin == "kubenet" ? "promiscuous-bridge" : "hairpin-veth"
+  hairpin_mode              = "hairpin-veth"
   volume_plugin_dir         = "/var/lib/kubelet/volumeplugins"
   cluster_dns_ips = [
     "11.0.0.10"
@@ -221,9 +215,7 @@ resource "flexkube_kubelet_pool" "controller" {
     for_each = local.controller_ips
 
     content {
-      name     = local.controller_names[kubelet.key]
-      pod_cidr = local.network_plugin == "kubenet" ? local.controller_cidrs[kubelet.key] : ""
-
+      name    = local.controller_names[kubelet.key]
       address = local.controller_ips[kubelet.key]
 
       host {

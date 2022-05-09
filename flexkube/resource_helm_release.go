@@ -114,7 +114,7 @@ func resourceHelmReleaseCreate(ctx context.Context, d *schema.ResourceData, m in
 		return diagFromErr(err)
 	}
 
-	if err := release.InstallOrUpgrade(); err != nil {
+	if err := release.InstallOrUpgrade(ctx); err != nil {
 		return diagFromErr(err)
 	}
 

@@ -128,8 +128,6 @@ EOF
     client_key  = base64encode(flexkube_pki.pki.state_sensitive[0].kubernetes[0].admin_certificate[0].private_key)
   })
 
-  network_plugin = var.network_plugin == "kubenet" ? "kubenet" : "cni"
-
   deploy_workers = var.workers_count > 0 ? 1 : 0
 
   ssh_private_key = file(var.ssh_private_key_path)
@@ -325,8 +323,6 @@ resource "flexkube_helm_release" "kubelet-rubber-stamp" {
 }
 
 resource "flexkube_helm_release" "calico" {
-  count = var.network_plugin == "calico" ? 1 : 0
-
   kubeconfig = local.kubeconfig_admin
   namespace  = "kube-system"
   chart      = var.calico_helm_chart_source
@@ -351,8 +347,7 @@ resource "flexkube_kubelet_pool" "controller" {
 
   pki_yaml          = flexkube_pki.pki.state_yaml
   cgroup_driver     = local.cgroup_driver
-  network_plugin    = local.network_plugin
-  hairpin_mode      = local.network_plugin == "kubenet" ? "promiscuous-bridge" : "hairpin-veth"
+  hairpin_mode      = "hairpin-veth"
   volume_plugin_dir = "/var/lib/kubelet/volumeplugins"
   cluster_dns_ips = [
     "11.0.0.10"
@@ -402,9 +397,7 @@ resource "flexkube_kubelet_pool" "controller" {
     for_each = local.controller_ips
 
     content {
-      name     = local.controller_names[kubelet.key]
-      pod_cidr = local.network_plugin == "kubenet" ? local.controller_cidrs[kubelet.key] : ""
-
+      name    = local.controller_names[kubelet.key]
       address = local.controller_ips[kubelet.key]
 
       host {
@@ -465,8 +458,7 @@ resource "flexkube_kubelet_pool" "workers" {
   pki_yaml = flexkube_pki.pki.state_yaml
 
   cgroup_driver     = local.cgroup_driver
-  network_plugin    = local.network_plugin
-  hairpin_mode      = local.network_plugin == "kubenet" ? "promiscuous-bridge" : "hairpin-veth"
+  hairpin_mode      = "hairpin-veth"
   volume_plugin_dir = "/var/lib/kubelet/volumeplugins"
   cluster_dns_ips = [
     "11.0.0.10"
@@ -503,9 +495,7 @@ resource "flexkube_kubelet_pool" "workers" {
     for_each = local.worker_ips
 
     content {
-      name     = local.worker_names[kubelet.key]
-      pod_cidr = local.network_plugin == "kubenet" ? local.worker_cidrs[kubelet.key] : ""
-
+      name    = local.worker_names[kubelet.key]
       address = local.worker_ips[kubelet.key]
 
       host {

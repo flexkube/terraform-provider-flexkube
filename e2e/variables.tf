@@ -18,10 +18,6 @@ variable "pod_cidr" {
   default = "10.1.0.0/16"
 }
 
-variable "network_plugin" {
-  default = "calico"
-}
-
 variable "node_ssh_port" {
   default = 22
 }
@@ -59,15 +55,15 @@ variable "metrics_server_helm_chart_source" {
 }
 
 variable "kube_apiserver_helm_chart_version" {
-  default = "0.3.10"
+  default = "0.4.0"
 }
 
 variable "kubernetes_helm_chart_version" {
-  default = "0.4.12"
+  default = "0.5.0"
 }
 
 variable "kube_proxy_helm_chart_version" {
-  default = "0.3.10"
+  default = "0.4.0"
 }
 
 variable "tls_bootstrapping_helm_chart_version" {
@@ -75,11 +71,11 @@ variable "tls_bootstrapping_helm_chart_version" {
 }
 
 variable "coredns_helm_chart_version" {
-  default = "2.0.3"
+  default = "2.0.4"
 }
 
 variable "metrics_server_helm_chart_version" {
-  default = "3.0.5"
+  default = "3.0.6"
 }
 
 variable "kubelet_rubber_stamp_helm_chart_version" {
@@ -87,7 +83,7 @@ variable "kubelet_rubber_stamp_helm_chart_version" {
 }
 
 variable "calico_helm_chart_version" {
-  default = "0.4.10"
+  default = "0.4.16"
 }
 
 variable "flatcar_channel" {
@@ -100,7 +96,6 @@ variable "cidr_ips_offset" {
 
 variable "kubelet_extra_args" {
   default = [
-    "--container-runtime=remote",
     "--container-runtime-endpoint=unix:///run/containerd/containerd.sock",
   ]
 }

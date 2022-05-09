@@ -52,7 +52,6 @@ jobs:
             cidr_ips_offset      = 1
             kubelet_extra_args   = [
               "--fail-swap-on=false",
-              "--container-runtime=remote",
               "--container-runtime-endpoint=unix:///run/containerd/containerd.sock",
             ]
             cgroup_driver        = "cgroupfs"
