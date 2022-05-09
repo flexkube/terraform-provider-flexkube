@@ -29,10 +29,6 @@ locals {
       source = "/var/lib/containerd/",
       target = "/var/lib/containerd",
     },
-    {
-      source = "/run/torcx/unpack/docker/bin/containerd-shim-runc-v2",
-      target = "/usr/bin/containerd-shim-runc-v2",
-    },
   ] : []
 }
 
