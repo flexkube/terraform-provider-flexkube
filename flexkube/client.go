@@ -1,8 +1,6 @@
 package flexkube
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/kubernetes/client"
@@ -41,8 +39,6 @@ func clientUnmarshal(i interface{}) *client.Config {
 	if h, ok := j["token"]; ok {
 		c.Token = h.(string)
 	}
-
-	fmt.Printf("returning client %+v", c)
 
 	return c
 }
