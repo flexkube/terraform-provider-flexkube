@@ -21,7 +21,7 @@ func pkiMarshal(e *pki.PKI, sensitive bool) interface{} {
 	}
 }
 
-func pkiSchema(computed bool, sensitive bool) *schema.Schema {
+func pkiSchema(computed, sensitive bool) *schema.Schema {
 	return optionalBlock(computed, sensitive, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"certificate": certificateBlockSchema(true),

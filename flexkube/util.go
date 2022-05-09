@@ -120,7 +120,7 @@ func requiredBlock(computed bool, elem func(bool) *schema.Resource) *schema.Sche
 	return s
 }
 
-func optionalBlock(computed bool, sensitive bool, elem func(bool) map[string]*schema.Schema) *schema.Schema {
+func optionalBlock(computed, sensitive bool, elem func(bool) map[string]*schema.Schema) *schema.Schema {
 	s := &schema.Schema{
 		Type:      schema.TypeList,
 		Computed:  computed,
@@ -498,7 +498,7 @@ func stringSliceToInterfaceSlice(i []string) []interface{} {
 	return o
 }
 
-func stringMapSchema(computed bool, sensitive bool) *schema.Schema {
+func stringMapSchema(computed, sensitive bool) *schema.Schema {
 	s := optionalMapPrimitive(computed, func(computed bool) *schema.Schema {
 		return &schema.Schema{
 			Type: schema.TypeString,
