@@ -156,6 +156,10 @@ test-local-apply:
 build-e2e:
 	docker build -t $(E2E_IMAGE) e2e
 
+.PHONY: build-integration
+build-integration:
+	docker build -t $(INTEGRATION_IMAGE) integration
+
 .PHONY: vagrant-up
 vagrant-up:
 	$(VAGRANTCMD) up

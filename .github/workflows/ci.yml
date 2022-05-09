@@ -96,3 +96,13 @@ jobs:
       - run: |
           terraform -chdir=libvirt init
           make test-terraform
+  build-integration-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: make build-integration
+  build-e2e-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: make build-e2e
