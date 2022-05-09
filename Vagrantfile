@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 Vagrant.configure("2") do |config|
-  channel = ENV["TF_VAR_flatcar_channel"] || "edge"
+  channel = ENV["TF_VAR_flatcar_channel"] || "stable"
 
   # Box setup.
   config.vm.box     = "flatcar-#{channel}"
