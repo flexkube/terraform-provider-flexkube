@@ -8,6 +8,8 @@ kubeconfig
 config.yaml
 state.yaml
 terraform.tfstate*
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
 variables.auto.tfvars
 /c.out
 crash.log
