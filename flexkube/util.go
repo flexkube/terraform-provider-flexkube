@@ -295,20 +295,20 @@ func resourceDelete(uf unmarshalF, key string) schema.DeleteContextFunc {
 }
 
 // prepareDiff generates all information, which needs to be written by resourceDiff.
-func prepareDiff(d getter, uf unmarshalF) (cy string, r types.Resource, statesMap map[string]interface{}, err error) {
-	cy, err = configYaml(d, uf)
+func prepareDiff(d getter, uf unmarshalF) (string, types.Resource, map[string]interface{}, error) {
+	cy, err := configYaml(d, uf)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("getting config in YAML format: %w", err)
 	}
 
 	// Initialize resource, but there is no need to refresh the state, as we will only write
 	// desired states and configuration anyway.
-	r, err = initialize(d, uf, false)
+	r, err := initialize(d, uf, false)
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("initializing configuration: %w", err)
 	}
 
-	statesMap, err = states(r.Containers().DesiredState())
+	statesMap, err := states(r.Containers().DesiredState())
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("getting serialized states: %w", err)
 	}
