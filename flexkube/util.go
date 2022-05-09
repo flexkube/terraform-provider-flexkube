@@ -330,7 +330,7 @@ func resourceDiff(uf unmarshalF) func(ctx context.Context, d *schema.ResourceDif
 			// If the configuration has not been fully populated yet, some of required fields might be empty, so validation
 			// and initialization will fail, so just don't do anything if that happens.
 			//
-			//nolint:nilerr
+			//nolint:nilerr // It's deliberate to ignore the error here to not proceed with computation.
 			return nil
 		}
 
@@ -488,7 +488,8 @@ func stringListUnmarshal(i interface{}) []string {
 }
 
 func stringSliceToInterfaceSlice(i []string) []interface{} {
-	var o []interface{} //nolint:prealloc
+	//nolint:prealloc // Don't preallocate, as then the diff shows diff between nil and empty slice.
+	var o []interface{}
 
 	for _, v := range i {
 		o = append(o, v)

@@ -43,7 +43,8 @@ func clientUnmarshal(i interface{}) *client.Config {
 	return c
 }
 
-func clientSchema(computed bool) *schema.Schema { //nolint:unparam
+//nolint:unparam // False positive.
+func clientSchema(computed bool) *schema.Schema {
 	return optionalBlock(computed, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"server":             optionalString(computed),

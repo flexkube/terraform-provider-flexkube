@@ -21,9 +21,8 @@ func mountsMarshal(c []types.Mount) []interface{} {
 }
 
 func mountsUnmarshal(i interface{}) []types.Mount {
-	// Don't preallocate, as then the diff shows diff between
-	// nil and empty slice.
-	var m []types.Mount //nolint:prealloc
+	//nolint:prealloc // Don't preallocate, as then the diff shows diff between nil and empty slice.
+	var m []types.Mount
 
 	if i == nil {
 		return m

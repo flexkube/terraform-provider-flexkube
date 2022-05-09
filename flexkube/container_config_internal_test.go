@@ -10,7 +10,7 @@ import (
 
 const examplePort = 8080
 
-//nolint:funlen
+//nolint:funlen // Just lengthy conversion test.
 func TestContainerConfigMarshal(t *testing.T) {
 	t.Parallel()
 
@@ -115,7 +115,7 @@ func TestContainerConfigMarshalSensitive(t *testing.T) {
 	}
 }
 
-//nolint:funlen
+//nolint:funlen // Just lengthy conversion test.
 func TestContainerConfigUnmarshal(t *testing.T) {
 	t.Parallel()
 

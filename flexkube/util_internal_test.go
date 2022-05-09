@@ -24,7 +24,7 @@ const (
 
 // saveState() tests.
 //
-// nolint:paralleltest // This function modifies environment variables, which are global.
+//nolint:paralleltest // This function modifies environment variables, which are global.
 func TestSaveStateBadScheme(t *testing.T) {
 	r := resourceContainers()
 	delete(r.Schema, stateYAMLSchemaKey)
