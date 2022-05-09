@@ -13,8 +13,8 @@ jobs:
         with:
           # Required for Codecov report uploading.
           fetch-depth: 0
-      - run: make install-cc-test-reporter BIN_PATH=/usr/local/bin
-      - run: make build build-test test-update-linters lint
+      - run: make install-cc-test-reporter install-changelog BIN_PATH=/usr/local/bin
+      - run: make build build-test test-update-linters lint test-tidy test-changelog
       - run: make test-cover-upload
   e2e:
     runs-on: ubuntu-latest
@@ -83,3 +83,16 @@ jobs:
       - uses: actions/checkout@v2
       # Use dedicated action for nice integration with GitHub.
       - uses: returntocorp/semgrep-action@v1
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install terraform
+      - run: |
+          terraform -chdir=libvirt init
+          make test-terraform

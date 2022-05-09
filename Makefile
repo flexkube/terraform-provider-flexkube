@@ -56,6 +56,10 @@ install-cc-test-reporter:
 	curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $(BIN_PATH)/cc-test-reporter
 	chmod +x $(BIN_PATH)/cc-test-reporter
 
+.PHONY: install-changelog
+install-changelog:
+	go install github.com/rcmachado/changelog@0.7.0
+
 .PHONY: install-ci
 install-ci: install-golangci-lint install-cc-test-reporter
 
@@ -231,3 +235,26 @@ semgrep:
 .PHONY: test-vagrant
 test-vagrant:
 	vagrant validate --ignore-provider
+
+.PHONY: test-changelog
+test-changelog: test-working-tree-clean
+	make format-changelog
+	@test -z "$$(git status --porcelain)" || (echo "Please run 'make format-changelog' and commit generated changes."; git diff; exit 1)
+
+.PHONY: test-working-tree-clean
+test-working-tree-clean:
+	@test -z "$$(git status --porcelain)" || (echo "Commit all changes before running this target"; exit 1)
+
+.PHONY: test-tidy
+test-tidy: test-working-tree-clean
+	go mod tidy
+	@test -z "$$(git status --porcelain)" || (echo "Please run 'go mod tidy' and commit generated changes."; git diff; exit 1)
+
+.PHONY: format-changelog
+format-changelog:
+	changelog fmt -o CHANGELOG.md.fmt
+	mv CHANGELOG.md.fmt CHANGELOG.md
+
+.PHONY: test-terraform
+test-terraform:
+	terraform -chdir=libvirt validate
