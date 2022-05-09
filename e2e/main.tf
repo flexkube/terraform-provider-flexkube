@@ -35,8 +35,6 @@ resource "random_password" "bootstrap_token_secret" {
 }
 
 locals {
-  cgroup_driver = var.flatcar_channel == "edge" ? "systemd" : "cgroupfs"
-
   api_port = 8443
 
   node_load_balancer_address = "127.0.0.1:7443"

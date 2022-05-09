@@ -9,6 +9,8 @@ resource "null_resource" "controllers" {
 }
 
 locals {
+  cgroup_driver = var.flatcar_channel == "edge" ? "systemd" : "cgroupfs"
+
   controller_ips   = null_resource.controllers.*.triggers.ip
   controller_names = null_resource.controllers.*.triggers.name
   controller_cidrs = null_resource.controllers.*.triggers.cidr
@@ -20,7 +22,10 @@ locals {
   worker_names = null_resource.workers.*.triggers.name
 
   kubelet_extra_args = var.kubelet_extra_args
-  kubelet_extra_mounts = [
+  kubelet_extra_mounts = concat(local.cgroup_driver == "systemd" ? [{
+    source = "/run/systemd/",
+    target = "/run/systemd",
+    }] : [], [
     {
       source = "/run/containerd/",
       target = "/run/containerd",
@@ -29,7 +34,7 @@ locals {
       source = "/var/lib/containerd/",
       target = "/var/lib/containerd",
     },
-  ]
+  ])
 }
 
 resource "null_resource" "workers" {
