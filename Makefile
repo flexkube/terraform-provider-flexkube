@@ -222,3 +222,7 @@ test-e2e-run:
 test-e2e-destroy: TERRAFORM_BIN=$(TERRAFORM_ENV) /bin/terraform
 test-e2e-destroy:
 	$(TERRAFORM_BIN) -chdir=e2e destroy -auto-approve
+
+.PHONY: test-vagrant
+test-vagrant:
+	vagrant validate --ignore-provider
