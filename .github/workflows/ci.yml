@@ -32,6 +32,8 @@ jobs:
             ${{ runner.os }}-go-
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
+      - name: Setup containerd
+        uses: crazy-max/ghaction-setup-containerd@v1.3.0
       - name: Fetch dependencies and configure tests
         run: |
           curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
@@ -47,7 +49,6 @@ jobs:
             nodes_cidr           = "172.17.0.0/24"
             node_ssh_port        = 2222
             workers_count        = 0
-            container_runtime    = "docker"
             cidr_ips_offset      = 1
             kubelet_extra_args   = ["--fail-swap-on=false"]
           EOF
