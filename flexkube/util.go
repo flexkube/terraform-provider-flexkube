@@ -267,7 +267,7 @@ func diagFromErr(err error) diag.Diagnostics {
 	return nil
 }
 
-func resourceDelete(uf unmarshalF, key string) func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics { //nolint:lll
+func resourceDelete(uf unmarshalF, key string) schema.DeleteContextFunc {
 	return func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 		// Reset user configuration to indicate, that we destroy everything.
 		if err := d.Set(key, []interface{}{}); err != nil {
