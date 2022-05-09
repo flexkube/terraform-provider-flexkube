@@ -94,14 +94,13 @@ variable "flatcar_channel" {
   default = "stable"
 }
 
-variable "container_runtime" {
-  default = "containerd"
-}
-
 variable "cidr_ips_offset" {
   default = 2
 }
 
 variable "kubelet_extra_args" {
-  default = []
+  default = [
+    "--container-runtime=remote",
+    "--container-runtime-endpoint=unix:///run/containerd/containerd.sock",
+  ]
 }

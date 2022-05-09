@@ -19,8 +19,8 @@ locals {
   worker_cidrs = null_resource.workers.*.triggers.cidr
   worker_names = null_resource.workers.*.triggers.name
 
-  kubelet_extra_args = var.container_runtime == "containerd" ? concat(var.kubelet_extra_args, ["--container-runtime=remote", "--container-runtime-endpoint=unix:///run/containerd/containerd.sock"]) : var.kubelet_extra_args
-  kubelet_extra_mounts = var.container_runtime == "containerd" ? [
+  kubelet_extra_args = var.kubelet_extra_args
+  kubelet_extra_mounts = [
     {
       source = "/run/containerd/",
       target = "/run/containerd",
@@ -29,7 +29,7 @@ locals {
       source = "/var/lib/containerd/",
       target = "/var/lib/containerd",
     },
-  ] : []
+  ]
 }
 
 resource "null_resource" "workers" {
