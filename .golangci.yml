@@ -13,7 +13,7 @@ issues:
   max-issues-per-linter: 0
   exclude-rules:
     - linters:
-      - forbidigo
+        - forbidigo
       text: "use of `fmt.Printf` forbidden by pattern"
 
 linters:
