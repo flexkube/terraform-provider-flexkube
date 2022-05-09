@@ -41,7 +41,7 @@ COVERPROFILE=c.out
 CC_TEST_REPORTER_ID=5bc3e58aca2ff47897d533ba92ae8db15ac9fdb83fad3637301ee5d75ccd4143
 
 .PHONY: all
-all: build build-test test lint
+all: build build-test test lint semgrep
 
 .PHONY: download
 download:
@@ -222,6 +222,11 @@ test-e2e-run:
 test-e2e-destroy: TERRAFORM_BIN=$(TERRAFORM_ENV) /bin/terraform
 test-e2e-destroy:
 	$(TERRAFORM_BIN) -chdir=e2e destroy -auto-approve
+
+.PHONY: semgrep
+semgrep: SEMGREP_BIN=semgrep
+semgrep:
+	@if ! which $(SEMGREP_BIN) >/dev/null 2>&1; then echo "$(SEMGREP_BIN) binary not found, skipping extra linting"; else $(SEMGREP_BIN) --error; fi
 
 .PHONY: test-vagrant
 test-vagrant:

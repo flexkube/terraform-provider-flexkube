@@ -72,3 +72,9 @@ jobs:
           sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
           sudo apt-get update && sudo apt-get install vagrant
       - run: make test-vagrant
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # Use dedicated action for nice integration with GitHub.
+      - uses: returntocorp/semgrep-action@v1
