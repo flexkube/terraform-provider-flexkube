@@ -55,6 +55,7 @@ jobs:
               "--container-runtime=remote",
               "--container-runtime-endpoint=unix:///run/containerd/containerd.sock",
             ]
+            cgroup_driver        = "cgroupfs"
           EOF
       - run: make build test-e2e-run TERRAFORM_BIN=terraform
   codespell:

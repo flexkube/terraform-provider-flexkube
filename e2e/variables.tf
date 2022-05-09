@@ -104,3 +104,7 @@ variable "kubelet_extra_args" {
     "--container-runtime-endpoint=unix:///run/containerd/containerd.sock",
   ]
 }
+
+variable "cgroup_driver" {
+  default = "systemd"
+}

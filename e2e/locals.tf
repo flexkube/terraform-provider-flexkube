@@ -9,7 +9,7 @@ resource "null_resource" "controllers" {
 }
 
 locals {
-  cgroup_driver = var.flatcar_channel == "edge" ? "systemd" : "cgroupfs"
+  cgroup_driver = var.cgroup_driver
 
   controller_ips   = null_resource.controllers.*.triggers.ip
   controller_names = null_resource.controllers.*.triggers.name
