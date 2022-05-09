@@ -18,7 +18,6 @@ resource "flexkube_kubelet_pool" "workers" {
   pki_yaml = flexkube_pki.pki.state_yaml
 
   cgroup_driver     = "cgroupfs"
-  network_plugin    = "cni"
   hairpin_mode      = "hairpin-veth"
   volume_plugin_dir = "/var/lib/kubelet/volumeplugins"
   cluster_dns_ips = [
@@ -60,8 +59,6 @@ resource "flexkube_kubelet_pool" "workers" {
 * `cluster_dns_ips` - (Required) List of cluster DNS IP addresses, which will be set in the pods.
 
 * `cgroup_driver` - (Required) Cgroup driver to be used by kubelet. Please refer to your distribution documentation to see the right choice for you. Valid values are `cgroupfs` and `systemd`. Docker runtime on the node must have the same driver configured.
-
-* `network_plugin` - (Required) Network plugin to be used by kubelet. Valid values are `kubenet` and `cni`.
 
 * `hairpin_mode` - (Required) Hairpin mode to be used by kubelet. Valid values are `promiscuous-bridge` and `hairpin-veth`.
 
@@ -115,15 +112,11 @@ A `kubelet` block supports the following:
 
 * `name` - (Required) Name of the node.
 
-* `pod_cidr` - (Optional) If `network_plugin` is set to `kubenet`, defines CIDR for pods on this node.
-
 * `bootstrap_config` - (Required) A `bootstrap_config` block as defined below. This block defines parameters for kubelet bootstrapping process.
 
 * `cluster_dns_ips` - (Required) List of cluster DNS IP addresses, which will be set in the pods.
 
 * `cgroup_driver` - (Required) Cgroup driver to be used by kubelet. Please refer to your distribution documentation to see the right choice for you. Valid values are `cgroupfs` and `systemd`. Docker runtime on the node must have the same driver configured.
-
-* `network_plugin` - (Required) Network plugin to be used by kubelet. Valid values are `kubenet` and `cni`.
 
 * `hairpin_mode` - (Required) Hairpin mode to be used by kubelet. Valid values are `promiscuous-bridge` and `hairpin-veth`.
 

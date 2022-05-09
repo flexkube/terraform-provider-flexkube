@@ -12,7 +12,8 @@ import (
 	"github.com/flexkube/libflexkube/pkg/host/transport/direct"
 )
 
-func TestHostConfiguredContainerMarshal(t *testing.T) { //nolint:funlen
+//nolint:funlen // Just lengthy conversion test.
+func TestHostConfiguredContainerMarshal(t *testing.T) {
 	t.Parallel()
 
 	c := container.HostConfiguredContainer{

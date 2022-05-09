@@ -23,7 +23,6 @@ func kubeletsUnmarshal(i interface{}) []kubelet.Kubelet {
 			Image:                   t["image"].(string),
 			KubernetesCACertificate: types.Certificate(t["kubernetes_ca_certificate"].(string)),
 			CgroupDriver:            t["cgroup_driver"].(string),
-			NetworkPlugin:           t["network_plugin"].(string),
 			HairpinMode:             t["hairpin_mode"].(string),
 			VolumePluginDir:         t["volume_plugin_dir"].(string),
 			Name:                    t["name"].(string),
@@ -86,9 +85,8 @@ func kubeletSchema() *schema.Schema {
 						Type: schema.TypeString,
 					}
 				}),
-				"admin_config":   clientSchema(false),
-				"cgroup_driver":  optionalString(false),
-				"network_plugin": optionalString(false),
+				"admin_config":  clientSchema(false),
+				"cgroup_driver": optionalString(false),
 				"system_reserved": optionalMapPrimitive(false, func(computed bool) *schema.Schema {
 					return &schema.Schema{
 						Type: schema.TypeString,
@@ -101,7 +99,6 @@ func kubeletSchema() *schema.Schema {
 				}),
 				"hairpin_mode":        optionalString(false),
 				"volume_plugin_dir":   optionalString(false),
-				"pod_cidr":            optionalString(false),
 				"extra_mount":         mountsSchema(false),
 				"wait_for_node_ready": optionalBool(false),
 				"extra_args":          optionalStringList(false),

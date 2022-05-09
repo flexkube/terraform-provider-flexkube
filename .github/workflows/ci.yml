@@ -7,21 +7,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: golangci/golangci-lint:v1.40.1
+    container: golangci/golangci-lint:v1.46.0
     steps:
       - uses: actions/checkout@v2
         with:
           # Required for Codecov report uploading.
           fetch-depth: 0
-      - run: make install-cc-test-reporter BIN_PATH=/usr/local/bin
-      - run: make build build-test test-update-linters lint
+      - run: make install-cc-test-reporter install-changelog BIN_PATH=/usr/local/bin
+      - run: make build build-test test-update-linters lint test-tidy test-changelog
       - run: make test-cover-upload
   e2e:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v2
         with:
-          go-version: '1.17'
+          go-version: '1.18'
       - uses: actions/cache@v2
         with:
           path: |
@@ -32,6 +32,8 @@ jobs:
             ${{ runner.os }}-go-
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
+      - name: Setup containerd
+        uses: crazy-max/ghaction-setup-containerd@v1.3.0
       - name: Fetch dependencies and configure tests
         run: |
           curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
@@ -47,9 +49,12 @@ jobs:
             nodes_cidr           = "172.17.0.0/24"
             node_ssh_port        = 2222
             workers_count        = 0
-            container_runtime    = "docker"
             cidr_ips_offset      = 1
-            kubelet_extra_args   = ["--fail-swap-on=false"]
+            kubelet_extra_args   = [
+              "--fail-swap-on=false",
+              "--container-runtime-endpoint=unix:///run/containerd/containerd.sock",
+            ]
+            cgroup_driver        = "cgroupfs"
           EOF
       - run: make build test-e2e-run TERRAFORM_BIN=terraform
   codespell:
@@ -59,6 +64,45 @@ jobs:
       - uses: codespell-project/actions-codespell@master
         with:
           skip: .git,go.sum
-          ignore_words_list: uptodate
+          ignore_words_list: uptodate,decorder
           check_filenames: true
           check_hidden: true
+  vagrant:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install vagrant
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install vagrant
+      - run: make test-vagrant
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # Use dedicated action for nice integration with GitHub.
+      - uses: returntocorp/semgrep-action@v1
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install terraform
+      - run: |
+          terraform -chdir=libvirt init
+          make test-terraform
+  build-integration-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: make build-integration
+  build-e2e-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: make build-e2e

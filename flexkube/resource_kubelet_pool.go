@@ -35,9 +35,8 @@ func resourceKubeletPool() *schema.Resource {
 					Type: schema.TypeString,
 				}
 			}),
-			"admin_config":   clientSchema(false),
-			"cgroup_driver":  optionalString(false),
-			"network_plugin": optionalString(false),
+			"admin_config":  clientSchema(false),
+			"cgroup_driver": optionalString(false),
 			"system_reserved": optionalMapPrimitive(false, func(computed bool) *schema.Schema {
 				return &schema.Schema{
 					Type: schema.TypeString,
@@ -64,7 +63,6 @@ func kubeletPoolUnmarshal(d getter, includeState bool) types.ResourceConfig {
 		Image:                   d.Get("image").(string),
 		KubernetesCACertificate: types.Certificate(d.Get("kubernetes_ca_certificate").(string)),
 		CgroupDriver:            d.Get("cgroup_driver").(string),
-		NetworkPlugin:           d.Get("network_plugin").(string),
 		HairpinMode:             d.Get("hairpin_mode").(string),
 		VolumePluginDir:         d.Get("volume_plugin_dir").(string),
 		Kubelets:                kubeletsUnmarshal(d.Get("kubelet")),

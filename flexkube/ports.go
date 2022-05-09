@@ -23,9 +23,8 @@ func portMapMarshal(c []types.PortMap) []interface{} {
 func portMapUnmarshal(i interface{}) []types.PortMap {
 	j := i.([]interface{})
 
-	// Don't preallocate, as then the diff shows diff between
-	// nil and empty slice.
-	var p []types.PortMap //nolint:prealloc
+	//nolint:prealloc // Don't preallocate, as then the diff shows diff between nil and empty slice.
+	var p []types.PortMap
 
 	for _, v := range j {
 		l := v.(map[string]interface{})

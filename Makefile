@@ -13,7 +13,7 @@ GOBUILD=CGO_ENABLED=$(CGO_ENABLED) $(GOCMD) build -v -buildmode=exe -ldflags $(L
 GO_PACKAGES=./...
 GO_TESTS=^.*$
 
-GOLANGCI_LINT_VERSION=v1.40.1
+GOLANGCI_LINT_VERSION=v1.46.0
 
 BIN_PATH=$$HOME/bin
 
@@ -41,7 +41,7 @@ COVERPROFILE=c.out
 CC_TEST_REPORTER_ID=5bc3e58aca2ff47897d533ba92ae8db15ac9fdb83fad3637301ee5d75ccd4143
 
 .PHONY: all
-all: build build-test test lint
+all: build build-test test lint semgrep
 
 .PHONY: download
 download:
@@ -55,6 +55,10 @@ install-golangci-lint:
 install-cc-test-reporter:
 	curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $(BIN_PATH)/cc-test-reporter
 	chmod +x $(BIN_PATH)/cc-test-reporter
+
+.PHONY: install-changelog
+install-changelog:
+	go install github.com/rcmachado/changelog@0.7.0
 
 .PHONY: install-ci
 install-ci: install-golangci-lint install-cc-test-reporter
@@ -152,6 +156,10 @@ test-local-apply:
 build-e2e:
 	docker build -t $(E2E_IMAGE) e2e
 
+.PHONY: build-integration
+build-integration:
+	docker build -t $(INTEGRATION_IMAGE) integration
+
 .PHONY: vagrant-up
 vagrant-up:
 	$(VAGRANTCMD) up
@@ -222,3 +230,35 @@ test-e2e-run:
 test-e2e-destroy: TERRAFORM_BIN=$(TERRAFORM_ENV) /bin/terraform
 test-e2e-destroy:
 	$(TERRAFORM_BIN) -chdir=e2e destroy -auto-approve
+
+.PHONY: semgrep
+semgrep: SEMGREP_BIN=semgrep
+semgrep:
+	@if ! which $(SEMGREP_BIN) >/dev/null 2>&1; then echo "$(SEMGREP_BIN) binary not found, skipping extra linting"; else $(SEMGREP_BIN) --error; fi
+
+.PHONY: test-vagrant
+test-vagrant:
+	vagrant validate --ignore-provider
+
+.PHONY: test-changelog
+test-changelog: test-working-tree-clean
+	make format-changelog
+	@test -z "$$(git status --porcelain)" || (echo "Please run 'make format-changelog' and commit generated changes."; git diff; exit 1)
+
+.PHONY: test-working-tree-clean
+test-working-tree-clean:
+	@test -z "$$(git status --porcelain)" || (echo "Commit all changes before running this target"; exit 1)
+
+.PHONY: test-tidy
+test-tidy: test-working-tree-clean
+	go mod tidy
+	@test -z "$$(git status --porcelain)" || (echo "Please run 'go mod tidy' and commit generated changes."; git diff; exit 1)
+
+.PHONY: format-changelog
+format-changelog:
+	changelog fmt -o CHANGELOG.md.fmt
+	mv CHANGELOG.md.fmt CHANGELOG.md
+
+.PHONY: test-terraform
+test-terraform:
+	terraform -chdir=libvirt validate

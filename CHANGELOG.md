@@ -5,9 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2022-05-09
+### Changed
+- Updated `libflexkube` version to `v0.8.0`.
+- Updated remaining dependencies to latest versions.
+
+### Removed
+- `r/flexkube_kubelet_pool` parameters `network_plugin` and `pod_cidr` has been removed as they are no longer effective.
+
 ## [0.6.0] - 2021-09-02
 ### Changed
-- Updated `libflexkube` version to `v.7.0`.
+- Updated `libflexkube` version to `v0.7.0`.
 - Updated remaining dependencies to latest versions.
 
 ## [0.5.1] - 2021-05-31
@@ -52,6 +60,7 @@ in `libflexkube` and `flexkube_pki` and `flexkube_etcd_cluster` resources compla
 ### Changed
 - flexkube_containers: rename 'container' to 'host_configured_container'.
 
+[0.7.0]: https://github.com/flexkube/terraform-provider-flexkube/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/flexkube/terraform-provider-flexkube/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/flexkube/terraform-provider-flexkube/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/flexkube/terraform-provider-flexkube/compare/v0.4.1...v0.5.0

@@ -13,14 +13,16 @@ func kubernetesMarshal(e *pki.Kubernetes, sensitive bool) interface{} {
 
 	return []interface{}{
 		map[string]interface{}{
-			"certificate":                         []interface{}{certificateMarshal(sensitive, &e.Certificate)},
-			"ca":                                  []interface{}{certificateMarshal(sensitive, e.CA)},
-			"front_proxy_ca":                      []interface{}{certificateMarshal(sensitive, e.FrontProxyCA)},
-			"admin_certificate":                   []interface{}{certificateMarshal(sensitive, e.AdminCertificate)},
-			"kube_controller_manager_certificate": []interface{}{certificateMarshal(sensitive, e.KubeControllerManagerCertificate)}, //nolint:lll
-			"kube_scheduler_certificate":          []interface{}{certificateMarshal(sensitive, e.KubeSchedulerCertificate)},
-			"service_account_certificate":         []interface{}{certificateMarshal(sensitive, e.ServiceAccountCertificate)},
-			"kube_api_server":                     pkiKubeAPIServerMarshal(e.KubeAPIServer, sensitive),
+			"certificate":       []interface{}{certificateMarshal(sensitive, &e.Certificate)},
+			"ca":                []interface{}{certificateMarshal(sensitive, e.CA)},
+			"front_proxy_ca":    []interface{}{certificateMarshal(sensitive, e.FrontProxyCA)},
+			"admin_certificate": []interface{}{certificateMarshal(sensitive, e.AdminCertificate)},
+			"kube_controller_manager_certificate": []interface{}{
+				certificateMarshal(sensitive, e.KubeControllerManagerCertificate),
+			},
+			"kube_scheduler_certificate":  []interface{}{certificateMarshal(sensitive, e.KubeSchedulerCertificate)},
+			"service_account_certificate": []interface{}{certificateMarshal(sensitive, e.ServiceAccountCertificate)},
+			"kube_api_server":             pkiKubeAPIServerMarshal(e.KubeAPIServer, sensitive),
 		},
 	}
 }

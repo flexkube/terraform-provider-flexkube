@@ -2,7 +2,6 @@ package flexkube
 
 import (
 	"context"
-	"os"
 	"strings"
 	"testing"
 
@@ -24,18 +23,18 @@ const (
 
 // saveState() tests.
 //
-// nolint:paralleltest // This function modifies environment variables, which are global.
+//nolint:paralleltest // This function modifies environment variables, which are global.
 func TestSaveStateBadScheme(t *testing.T) {
 	r := resourceContainers()
 	delete(r.Schema, stateYAMLSchemaKey)
 
-	withoutAcceptanceEnvVar(t, func(t *testing.T) { //nolint:thelper
-		d := r.Data(&terraform.InstanceState{})
+	t.Setenv(tfACC, "")
 
-		if err := saveState(d, container.ContainersState{}, containersUnmarshal, nil); err == nil {
-			t.Fatalf("save state should fail when called on bad scheme")
-		}
-	})
+	d := r.Data(&terraform.InstanceState{})
+
+	if err := saveState(d, container.ContainersState{}, containersUnmarshal, nil); err == nil {
+		t.Fatalf("save state should fail when called on bad scheme")
+	}
 }
 
 // resourceDelete() tests.
@@ -144,11 +143,11 @@ func TestResourceDeleteBadKey(t *testing.T) {
 	r := resourceContainers()
 	r.DeleteContext = resourceDelete(containersUnmarshal, "foo")
 
-	withoutAcceptanceEnvVar(t, func(t *testing.T) { //nolint:thelper
-		if err := r.DeleteContext(context.TODO(), r.Data(&terraform.InstanceState{}), nil); err == nil {
-			t.Fatalf("emptying key not existing in scheme should fail")
-		}
-	})
+	t.Setenv(tfACC, "")
+
+	if err := r.DeleteContext(context.TODO(), r.Data(&terraform.InstanceState{}), nil); err == nil {
+		t.Fatalf("emptying key not existing in scheme should fail")
+	}
 }
 
 // newResource() tests.
@@ -394,21 +393,5 @@ func TestStringMapUnmarshalEmpty(t *testing.T) {
 
 	if diff := cmp.Diff(stringMapUnmarshal(nil), e); diff != "" {
 		t.Fatalf("Unexpected diff: %s", diff)
-	}
-}
-
-func withoutAcceptanceEnvVar(t *testing.T, testF func(t *testing.T)) {
-	t.Helper()
-
-	v := os.Getenv(tfACC)
-
-	if err := os.Unsetenv(tfACC); err != nil {
-		t.Fatalf("Unsetting %q environment variable: %v", tfACC, err)
-	}
-
-	testF(t)
-
-	if err := os.Setenv(tfACC, v); err != nil {
-		t.Fatalf("Setting back %q environment variable: %v", tfACC, err)
 	}
 }

@@ -32,7 +32,8 @@ func containersStateMarshal(c container.ContainersState, sensitive bool) []inter
 
 	sort.Strings(names)
 
-	var r []interface{} //nolint:prealloc
+	//nolint:prealloc // Don't preallocate, as then the diff shows diff between nil and empty slice.
+	var r []interface{}
 
 	for _, n := range names {
 		r = append(r, hostConfiguredContainerMarshal(n, *c[n], sensitive))

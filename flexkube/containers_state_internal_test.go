@@ -12,7 +12,8 @@ import (
 	"github.com/flexkube/libflexkube/pkg/host/transport/direct"
 )
 
-func TestContainersStateMarshal(t *testing.T) { //nolint:funlen
+//nolint:funlen // Just lengthy conversion test.
+func TestContainersStateMarshal(t *testing.T) {
 	t.Parallel()
 
 	c := container.ContainersState{

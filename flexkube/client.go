@@ -1,8 +1,6 @@
 package flexkube
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/flexkube/libflexkube/pkg/kubernetes/client"
@@ -42,12 +40,11 @@ func clientUnmarshal(i interface{}) *client.Config {
 		c.Token = h.(string)
 	}
 
-	fmt.Printf("returning client %+v", c)
-
 	return c
 }
 
-func clientSchema(computed bool) *schema.Schema { //nolint:unparam
+//nolint:unparam // False positive.
+func clientSchema(computed bool) *schema.Schema {
 	return optionalBlock(computed, false, func(computed bool) map[string]*schema.Schema {
 		return map[string]*schema.Schema{
 			"server":             optionalString(computed),
