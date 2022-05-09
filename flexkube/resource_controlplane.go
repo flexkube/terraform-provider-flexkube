@@ -54,7 +54,7 @@ func controlplaneDiff(c context.Context, d *schema.ResourceDiff, m interface{}) 
 		keys := []string{"state", "config_yaml", "state_sensitive", "state_yaml"}
 		for _, k := range keys {
 			if err := d.SetNewComputed(k); err != nil {
-				return fmt.Errorf("failed setting new computed for field %q: %w", k, err)
+				return fmt.Errorf("setting new computed value for field %q: %w", k, err)
 			}
 		}
 	}
@@ -105,12 +105,12 @@ func controlplaneDestroy(ctx context.Context, d *schema.ResourceData, m interfac
 	// Validate the configuration.
 	r, err := c.New()
 	if err != nil {
-		return diagFromErr(fmt.Errorf("failed creating resource: %w", err))
+		return diagFromErr(fmt.Errorf("creating resource: %w", err))
 	}
 
 	// Get current state of the containers.
 	if err := r.CheckCurrentState(); err != nil {
-		return diagFromErr(fmt.Errorf("failed checking current state: %w", err))
+		return diagFromErr(fmt.Errorf("checking current state: %w", err))
 	}
 
 	// Deploy changes.

@@ -36,15 +36,15 @@ func resourcePKI() *schema.Resource {
 
 			if diff := cmp.Diff(pkiState, p); diff != "" {
 				if err := d.SetNewComputed("state"); err != nil {
-					return fmt.Errorf("failed setting key %q as new computed: %w", "state", err)
+					return fmt.Errorf("setting key %q as new computed: %w", "state", err)
 				}
 
 				if err := d.SetNewComputed("state_sensitive"); err != nil {
-					return fmt.Errorf("failed setting key %q as new computed: %w", "state_sensitive", err)
+					return fmt.Errorf("setting key %q as new computed: %w", "state_sensitive", err)
 				}
 
 				if err := d.SetNewComputed("state_yaml"); err != nil {
-					return fmt.Errorf("failed setting key %q as new computed: %w", "state_yaml", err)
+					return fmt.Errorf("setting key %q as new computed: %w", "state_yaml", err)
 				}
 			}
 
@@ -80,11 +80,11 @@ func getPKI(d getter) (*pki.PKI, error) {
 
 	b, err := yaml.Marshal(p)
 	if err != nil {
-		return nil, fmt.Errorf("failed converting PKI to YAML: %w", err)
+		return nil, fmt.Errorf("converting PKI to YAML: %w", err)
 	}
 
 	if err := yaml.Unmarshal(b, &pkiState); err != nil {
-		return nil, fmt.Errorf("failed unmarshaling PKI: %w", err)
+		return nil, fmt.Errorf("unmarshaling PKI: %w", err)
 	}
 
 	return pkiState, nil
@@ -93,7 +93,7 @@ func getPKI(d getter) (*pki.PKI, error) {
 func savePKI(d *schema.ResourceData, p *pki.PKI) error {
 	b, err := yaml.Marshal(p)
 	if err != nil {
-		return fmt.Errorf("failed converting PKI to YAML: %w", err)
+		return fmt.Errorf("converting PKI to YAML: %w", err)
 	}
 
 	props := map[string]interface{}{
@@ -104,7 +104,7 @@ func savePKI(d *schema.ResourceData, p *pki.PKI) error {
 
 	for k, v := range props {
 		if err := d.Set(k, v); err != nil {
-			return fmt.Errorf("failed setting property %q: %w", k, err)
+			return fmt.Errorf("setting property %q: %w", k, err)
 		}
 	}
 

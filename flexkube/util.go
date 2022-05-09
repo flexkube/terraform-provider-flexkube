@@ -195,7 +195,7 @@ func newResource(c types.ResourceConfig, refresh bool) (types.Resource, error) {
 	// Validate the configuration.
 	r, err := c.New()
 	if err != nil {
-		return nil, fmt.Errorf("failed creating resource: %w", err)
+		return nil, fmt.Errorf("creating resource: %w", err)
 	}
 
 	if !refresh {
@@ -204,7 +204,7 @@ func newResource(c types.ResourceConfig, refresh bool) (types.Resource, error) {
 
 	// Get current state of the containers.
 	if err := r.CheckCurrentState(); err != nil {
-		return nil, fmt.Errorf("failed checking current state: %w", err)
+		return nil, fmt.Errorf("checking current state: %w", err)
 	}
 
 	return r, nil
@@ -215,7 +215,7 @@ func initialize(d getter, uf unmarshalF, refresh bool) (types.Resource, error) {
 
 	r, err := newResource(c, refresh)
 	if err != nil {
-		return nil, fmt.Errorf("failed initializing resource: %w", err)
+		return nil, fmt.Errorf("initializing resource: %w", err)
 	}
 
 	return r, nil
@@ -226,7 +226,7 @@ func resourceCreate(uf unmarshalF) func(ctx context.Context, d *schema.ResourceD
 		// Create Containers object.
 		c, err := initialize(d, uf, true)
 		if err != nil {
-			return diagFromErr(fmt.Errorf("failed initializing configuration: %w", err))
+			return diagFromErr(fmt.Errorf("initializing configuration: %w", err))
 		}
 
 		// Deploy changes.
@@ -247,7 +247,7 @@ func resourceRead(uf unmarshalF) func(ctx context.Context, d *schema.ResourceDat
 	return func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 		c, err := initialize(d, uf, true)
 		if err != nil {
-			return diagFromErr(fmt.Errorf("failed initializing configuration: %w", err))
+			return diagFromErr(fmt.Errorf("initializing configuration: %w", err))
 		}
 
 		// If there is nothing in the current state, mark the resource as destroyed.
@@ -271,13 +271,13 @@ func resourceDelete(uf unmarshalF, key string) schema.DeleteContextFunc {
 	return func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 		// Reset user configuration to indicate, that we destroy everything.
 		if err := d.Set(key, []interface{}{}); err != nil {
-			return diagFromErr(fmt.Errorf("failed trigging a destroy: %w", err))
+			return diagFromErr(fmt.Errorf("trigging a destroy: %w", err))
 		}
 
 		// Create Containers object.
 		c, err := initialize(d, uf, true)
 		if err != nil {
-			return diagFromErr(fmt.Errorf("failed initializing configuration: %w", err))
+			return diagFromErr(fmt.Errorf("initializing configuration: %w", err))
 		}
 
 		// Deploy changes.
@@ -298,19 +298,19 @@ func resourceDelete(uf unmarshalF, key string) schema.DeleteContextFunc {
 func prepareDiff(d getter, uf unmarshalF) (cy string, r types.Resource, statesMap map[string]interface{}, err error) {
 	cy, err = configYaml(d, uf)
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed getting config in YAML format: %w", err)
+		return "", nil, nil, fmt.Errorf("getting config in YAML format: %w", err)
 	}
 
 	// Initialize resource, but there is no need to refresh the state, as we will only write
 	// desired states and configuration anyway.
 	r, err = initialize(d, uf, false)
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed initializing configuration: %w", err)
+		return "", nil, nil, fmt.Errorf("initializing configuration: %w", err)
 	}
 
 	statesMap, err = states(r.Containers().DesiredState())
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed getting serialized states: %w", err)
+		return "", nil, nil, fmt.Errorf("getting serialized states: %w", err)
 	}
 
 	return cy, r, statesMap, nil
@@ -364,7 +364,7 @@ func setNewComputed(d *schema.ResourceDiff) error {
 	// Now apply selected fields.
 	for _, k := range setNewComputed {
 		if err := d.SetNewComputed(k); err != nil {
-			return fmt.Errorf("failed setting key %q as new computed: %w", k, err)
+			return fmt.Errorf("setting key %q as new computed: %w", k, err)
 		}
 	}
 
@@ -379,7 +379,7 @@ func states(s container.ContainersState) (map[string]interface{}, error) {
 
 	sy, err := stateYaml(s)
 	if err != nil {
-		return nil, fmt.Errorf("failed converting state to YAML: %w", err)
+		return nil, fmt.Errorf("converting state to YAML: %w", err)
 	}
 
 	states[stateYAMLSchemaKey] = sy
@@ -390,21 +390,21 @@ func states(s container.ContainersState) (map[string]interface{}, error) {
 func saveState(d *schema.ResourceData, s container.ContainersState, uf unmarshalF, origErr error) error {
 	states, err := states(s)
 	if err != nil {
-		return fmt.Errorf("failed getting serialized states: %w", err)
+		return fmt.Errorf("getting serialized states: %w", err)
 	}
 
 	// If config is build on values passed from other resources, we won't know the exact content during
 	// planning, so we need to make sure, that after creating the right content is written to the field.
 	cy, err := configYaml(d, uf)
 	if err != nil {
-		return fmt.Errorf("failed getting config in YAML format: %w", err)
+		return fmt.Errorf("getting config in YAML format: %w", err)
 	}
 
 	states[configYAMLSchemaKey] = cy
 
 	for k, v := range states {
 		if err := d.Set(k, v); err != nil {
-			return fmt.Errorf("failed to persist key %q to state: %w", k, err)
+			return fmt.Errorf("persisting key %q to state: %w", k, err)
 		}
 	}
 
@@ -419,7 +419,7 @@ func stateYaml(s container.ContainersState) (interface{}, error) {
 
 	ccy, err := yaml.Marshal(cc)
 	if err != nil {
-		return "", fmt.Errorf("failed serializing state: %w", err)
+		return "", fmt.Errorf("serializing state: %w", err)
 	}
 
 	return string(ccy), nil
@@ -441,7 +441,7 @@ func configYaml(d getter, uf unmarshalF) (string, error) {
 
 	b, err := yaml.Marshal(rc)
 	if err != nil {
-		return "", fmt.Errorf("failed serializing generated configuration: %w", err)
+		return "", fmt.Errorf("serializing generated configuration: %w", err)
 	}
 
 	return string(b), nil
