@@ -37,7 +37,7 @@ EOF
 
 * `version` - (Optional) Version of the chart to install. Defaults to `>0.0.0-0`, which will install latest version of the chart.
 
-* `create_namespace` - (Optional) If `true`, namespace for the release will be automatically craeted. Defaults to `false`.
+* `create_namespace` - (Optional) If `true`, namespace for the release will be automatically created. Defaults to `false`.
 
 ## Attribute Reference
 
