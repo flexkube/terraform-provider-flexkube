@@ -55,15 +55,15 @@ variable "metrics_server_helm_chart_source" {
 }
 
 variable "kube_apiserver_helm_chart_version" {
-  default = "0.4.0"
-}
-
-variable "kubernetes_helm_chart_version" {
   default = "0.5.0"
 }
 
+variable "kubernetes_helm_chart_version" {
+  default = "0.6.0"
+}
+
 variable "kube_proxy_helm_chart_version" {
-  default = "0.4.0"
+  default = "0.5.0"
 }
 
 variable "tls_bootstrapping_helm_chart_version" {
@@ -71,19 +71,19 @@ variable "tls_bootstrapping_helm_chart_version" {
 }
 
 variable "coredns_helm_chart_version" {
-  default = "2.0.4"
+  default = "2.0.6"
 }
 
 variable "metrics_server_helm_chart_version" {
-  default = "3.0.6"
+  default = "3.0.9"
 }
 
 variable "kubelet_rubber_stamp_helm_chart_version" {
-  default = "0.1.7"
+  default = "0.1.8"
 }
 
 variable "calico_helm_chart_version" {
-  default = "0.4.16"
+  default = "0.4.22"
 }
 
 variable "flatcar_channel" {
