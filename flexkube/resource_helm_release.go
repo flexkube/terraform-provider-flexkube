@@ -11,7 +11,7 @@ import (
 	"github.com/flexkube/libflexkube/pkg/helm/release"
 )
 
-func validateYAML(v interface{}, s string) ([]string, []error) {
+func validateYAML(v interface{}, _ string) ([]string, []error) {
 	var i interface{}
 
 	if err := yaml.Unmarshal([]byte(v.(string)), &i); err != nil {
@@ -123,7 +123,7 @@ func resourceHelmReleaseCreate(ctx context.Context, d *schema.ResourceData, m in
 	return nil
 }
 
-func resourceHelmReleaseRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceHelmReleaseRead(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	release, err := getRelease(d, m)
 	if err != nil {
 		return diagFromErr(err)
@@ -143,7 +143,7 @@ func resourceHelmReleaseRead(ctx context.Context, d *schema.ResourceData, m inte
 	return nil
 }
 
-func resourceHelmReleaseDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceHelmReleaseDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	release, err := getRelease(d, m)
 	if err != nil {
 		return diagFromErr(err)

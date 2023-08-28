@@ -1,3 +1,4 @@
+// Package main serves as a main entrypoint for the terraform-provider-flexkube.
 package main
 
 import (

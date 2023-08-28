@@ -111,7 +111,7 @@ func savePKI(d *schema.ResourceData, p *pki.PKI) error {
 	return nil
 }
 
-func resourcePKICreate(c context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourcePKICreate(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	p, err := getPKI(d)
 	if err != nil {
 		return diagFromErr(fmt.Errorf("getting PKI: %w", err))
@@ -133,12 +133,12 @@ func resourcePKICreate(c context.Context, d *schema.ResourceData, m interface{})
 	return diagFromErr(savePKI(d, p))
 }
 
-func resourcePKIDelete(c context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourcePKIDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	d.SetId("")
 
 	return nil
 }
 
-func resourcePKIRead(c context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourcePKIRead(context.Context, *schema.ResourceData, interface{}) diag.Diagnostics {
 	return nil
 }

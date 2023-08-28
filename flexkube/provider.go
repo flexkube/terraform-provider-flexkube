@@ -23,7 +23,7 @@ func Provider() *schema.Provider {
 	}
 }
 
-func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+func providerConfigure(*schema.ResourceData) (interface{}, error) {
 	return &meta{
 		helmClientLock: sync.Mutex{},
 	}, nil
