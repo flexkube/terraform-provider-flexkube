@@ -6,11 +6,11 @@ import (
 	"github.com/flexkube/libflexkube/pkg/host/transport/direct"
 )
 
-func directMarshal(c direct.Config) interface{} {
+func directMarshal(direct.Config) interface{} {
 	return []interface{}{map[string]interface{}{}}
 }
 
-func directUnmarshal(i interface{}) *direct.Config {
+func directUnmarshal(interface{}) *direct.Config {
 	return &direct.Config{}
 }
 

@@ -97,7 +97,7 @@ func controlplaneUnmarshal(d getter, includeState bool) types.ResourceConfig {
 	return c
 }
 
-func controlplaneDestroy(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func controlplaneDestroy(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	c := controlplaneUnmarshal(d, true)
 
 	c.(*controlplane.Controlplane).Destroy = true

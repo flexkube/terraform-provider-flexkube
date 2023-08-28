@@ -45,6 +45,8 @@ linters-settings:
 
 linters:
   disable:
+    # We don't need this tight control over imports.
+    - depguard
     # Disabled until we implement some error types and migrate to use them.
     - goerr113
     # As we use formatting rules from different linter and they are conflicting.
@@ -66,17 +68,17 @@ linters:
     - maligned
     - golint
   enable:
+    - asasalint
     - asciicheck
     - bidichk
     - bodyclose
     - containedctx
     - contextcheck
     - cyclop
-    - deadcode
     - decorder
-    - depguard
     - dogsled
     - dupl
+    - dupword
     - durationcheck
     - errchkjson
     - errname
@@ -86,6 +88,7 @@ linters:
     - exportloopref
     - forbidigo
     - funlen
+    - gocheckcompilerdirectives
     - gochecknoglobals
     - gochecknoinits
     - gocognit
@@ -101,14 +104,17 @@ linters:
     - gomnd
     - gomodguard
     - goprintffuncname
+    - gosmopolitan
     - grouper
-    - ifshort
     - importas
     - ineffassign
+    - interfacebloat
     - lll
     - maintidx
     - makezero
+    - mirror
     - misspell
+    - musttag
     - nakedret
     - nestif
     - nilerr
@@ -122,20 +128,22 @@ linters:
     - prealloc
     - predeclared
     - promlinter
+    - reassign
     - revive
     - sqlclosecheck
-    - structcheck
     - stylecheck
+    - tagalign
     - tagliatelle
     - tenv
+    - testableexamples
     - testpackage
     - thelper
     - tparallel
-    - typecheck
     - unconvert
     - unparam
-    - varcheck
+    - usestdlibvars
     - wastedassign
     - whitespace
     - wrapcheck
     - wsl
+    - zerologlint
