@@ -14,7 +14,11 @@ jobs:
           # Required for Codecov report uploading.
           fetch-depth: 0
       - run: make install-cc-test-reporter install-changelog BIN_PATH=/usr/local/bin
-      - run: make build build-test test-update-linters lint test-tidy test-changelog
+      - run: |
+          # Required to avoid error 'fatal: detected dubious ownership in repository at' while calling
+          # 'git status --porcelain'.
+          git config --global --add safe.directory /__w/terraform-provider-flexkube/terraform-provider-flexkube
+          make build build-test test-update-linters lint test-tidy test-changelog
       - run: make test-cover-upload
   e2e:
     runs-on: ubuntu-latest
